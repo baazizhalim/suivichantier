@@ -1,161 +1,123 @@
 package com.example.suivichantier;
 
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.pdf.PdfRenderer;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.ParcelFileDescriptor;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ImageView;
-import android.Manifest;
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import static androidx.core.content.ContentProviderCompat.requireContext;
+import static com.google.android.material.internal.ContextUtils.getActivity;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import androidx.appcompat.app.AlertDialog;
+import androidx.room.Room;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import androidx.appcompat.app.AppCompatActivity;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int PERMISSION_REQUEST_CODE = 1;
-    private ZoomImageView pdfImageView;
+    static String ip="192.168.1.2";
+    private AppDatabase mDatabase;
+    private EditText usernameEditText;
+    private EditText passwordEditText;
+    private Button loginButton;
+    private Entreprise user;
+    private OkHttpClient okHttpClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        pdfImageView = findViewById(R.id.pdfImageView);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Suivi Chantier");
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
-        } else {
-            displayPdf();
-        }
-    }
+        //MyApp app = (MyApp) getApplication();
+        //mDatabase = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, "my-database").build();
+        mDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "my-database").allowMainThreadQueries().build();
+        //mDatabase = app.getDatabase();
+        okHttpClient = new OkHttpClient();
+        usernameEditText = findViewById(R.id.username);
+        passwordEditText = findViewById(R.id.password);
+        loginButton = findViewById(R.id.login);
 
 
 
-    private void displayPdf() {
-        try {
-            File cacheFile = new File(getCacheDir(), "sample.pdf");
-            if (isAssetNewer("sample.pdf", cacheFile)) {
-                copyAssetToFile("sample.pdf", cacheFile);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = usernameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+
+                user = mDatabase.entrepriseDao().login(username, password);
+                if (user != null) {
+                    Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                    // Rediriger vers une autre activité
+                } else {
+                    verifierServeur(username, password);
+
+                }
             }
-
-            // Copier le fichier PDF dans le répertoire de téléchargement spécifique à l'application
-            File externalFile = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "sample.pdf");
-            copyFile(cacheFile, externalFile);
-
-            // Ouvrir le fichier PDF
-            ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(externalFile, ParcelFileDescriptor.MODE_READ_ONLY);
-            PdfRenderer pdfRenderer = new PdfRenderer(fileDescriptor);
-            PdfRenderer.Page page = pdfRenderer.openPage(0); // Ouvrir la première page
-
-            // Créer un bitmap pour rendre la page PDF
-            Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
-            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-
-            // Afficher la page rendue dans l'ImageView
-            pdfImageView.setImageBitmap(bitmap);
-
-            // Fermer la page et le renderer
-            page.close();
-            pdfRenderer.close();
-            fileDescriptor.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private boolean isAssetNewer(String assetFileName, File cacheFile) {
-        try {
-            InputStream asset = getAssets().open(assetFileName);
-            long assetTimestamp = asset.available(); // Utilisation de la taille comme approximation du timestamp
-            asset.close();
-            return assetTimestamp != cacheFile.length();
-        } catch (IOException e) {
-            return true; // Si une erreur se produit, considérez l'asset comme plus récent
-        }
-    }
-
-    private void copyAssetToFile(String assetFileName, File destFile) {
-        try (InputStream in = getAssets().open(assetFileName);
-             OutputStream out = new FileOutputStream(destFile)) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = in.read(buffer)) > 0) {
-                out.write(buffer, 0, length);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void copyFile(File sourceFile, File destFile) throws IOException {
-        if (!destFile.exists()) {
-            destFile.createNewFile();
-        }
-
-        try (InputStream in = new FileInputStream(sourceFile);
-             OutputStream out = new FileOutputStream(destFile)) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = in.read(buffer)) > 0) {
-                out.write(buffer, 0, length);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                displayPdf();
-            } else {
-                Log.e("MainActivity", "Permission denied!");
-            }
-        }
-
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_search) {
-            // Handle search action
-            return true;
-        } else if (id == R.id.action_settings) {
-            // Handle settings action
-            return true;
+    private  void verifierServeur (String username, String password) {
+        Entreprise user=null;
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", username);
+            jsonBody.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-        return super.onOptionsItemSelected(item);
+        // Créer une requête HTTP POST avec le corps JSON
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+
+
+        // while building request
+        // we give our form
+        // as a parameter to post()
+        Request request = new Request.Builder().url("http://" + MainActivity.ip + ":5000/verifierUser")
+                .post(body)
+                .build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(
+                    @NotNull Call call,
+                    @NotNull IOException e) {
+                runOnUiThread(() ->
+                        Toast.makeText(getApplicationContext(), "Problème avec le serveur", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = response.body().string();
+                if (!responseBody.equals("0")) {
+                    getActivity(getApplicationContext()).runOnUiThread(() -> {
+
+                        Entreprise user=null;//a creer a partir de responseBody
+
+                        mDatabase.entrepriseDao().insert(user);
+                        Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        // Rediriger vers une autre activité
+                        });
+                } else Toast.makeText(MainActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
+
+
+            }
+        });
+
     }
 }
