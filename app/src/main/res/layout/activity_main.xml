@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F2F2F2"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/greeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bonjour !,"
+        android:textSize="24sp"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#000000"/>
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:src="@drawable/chantier"
+        android:layout_below="@id/greeting"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/welcome_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BIENVENUE SUR L'APPLI SUIVI CHANTIER"
+        android:textSize="20sp"
+        android:layout_below="@id/logo"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#000000"/>
+
+    <Button
+        android:id="@+id/connect_button"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="Je me connecte"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/rounded_button"
+        android:layout_below="@id/welcome_message"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/subscription_button"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="Demander une souscription"
+        android:textColor="#000000"
+        android:background="@drawable/rounded_outline_button"
+        android:layout_below="@id/connect_button"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/help_and_services"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aides et services"
+        android:textSize="16sp"
+        android:layout_below="@id/subscription_button"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#000000"/>
+</RelativeLayout>

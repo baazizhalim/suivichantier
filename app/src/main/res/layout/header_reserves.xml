@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:layout_gravity="clip_horizontal"
+    android:background="#DDDDDD">
+
+    <TextView
+        android:id="@+id/header_title1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Désignation"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/header_title2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Lot"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/header_title3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/header_title4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Observation"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/header_title5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Etat"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+</LinearLayout>

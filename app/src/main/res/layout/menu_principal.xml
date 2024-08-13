@@ -1,0 +1,114 @@
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:alignmentMode="alignMargins"
+    android:columnCount="2"
+    android:padding="16dp"
+    android:rowCount="6"
+    tools:context=".MenuPrincipal">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="2"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="Menu principal"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="40sp" />
+
+    <Button
+        android:id="@+id/infrastructure_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Infrastructure" />
+
+
+    <Button
+        android:id="@+id/superstructure_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Superstructure" />
+
+
+    <Button
+        android:id="@+id/ces_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="C.E.S" />
+
+    <Button
+        android:id="@+id/vrd_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="V.R.D" />
+    <Button
+        android:id="@+id/plans_executions_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Plans exécutions" />
+
+    <Button
+        android:id="@+id/pv_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Procès-Verbaux" />
+
+    <Button
+        android:id="@+id/com_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Communiqués" />
+
+    <Button
+        android:id="@+id/reserves_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Reserves" />
+
+    <Button
+        android:id="@+id/taches_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Tâches" />
+
+    <Button
+        android:id="@+id/notes_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Notes" />
+
+</GridLayout>

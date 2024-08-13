@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Ajoutez ici vos vues (TextView, EditText, Button, etc.) -->
+    <TextView
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Création marque"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="10dp"
+            android:text="Désignation : "
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/designation"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+
+            android:hint="Désignation"
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="10dp"
+            android:text="Priorité : "
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/priorite"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp" />
+    </LinearLayout>
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:padding="10dp"
+        android:text="Type : "
+        android:textSize="20sp" />
+
+    <Spinner
+        android:id="@+id/type"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+
+        android:padding="10dp"
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:padding="10dp"
+        android:text="Observation : "
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/observation"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+
+        android:hint="Observation"
+        android:padding="10dp" />
+</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="10dp"
+            android:text="Date d'ajout : "
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/dateAjout"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+
+            android:hint="Date d'Ajout"
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="10dp"
+            android:text="Etat : "
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/etat"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+
+            android:hint="Etat"
+            android:padding="10dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Modifier Etat" />
+
+        <Button
+            android:id="@+id/bottom_ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Valider" />
+
+        <Button
+            android:id="@+id/bottom_delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Effacer" />
+        <Button
+            android:id="@+id/bottom_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Annuler" />
+    </LinearLayout>
+</LinearLayout>
