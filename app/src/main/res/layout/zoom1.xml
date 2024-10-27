@@ -1,0 +1,48 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+<FrameLayout
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
+
+    <ImageView
+        android:id="@+id/image1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="matrix"
+        android:contentDescription="image1_desc"/>
+
+    <!-- Zoom In button -->
+
+    <!-- Zoom Out button -->
+
+
+    <ImageButton
+        android:id="@+id/zoom_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/btn_plus" />
+
+    <!-- Zoom Out button -->
+    <ImageButton
+        android:id="@+id/zoom_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="80dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/btn_minus" />
+
+</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

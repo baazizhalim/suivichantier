@@ -6,10 +6,10 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index("lotID")},foreignKeys = {
-        @ForeignKey(entity = Lot.class,
-                parentColumns = "lotID",
-                childColumns = "lotID",
+@Entity(indices = {@Index("chantierID")},foreignKeys = {
+        @ForeignKey(entity = Chantier.class,
+                parentColumns = "chantierID",
+                childColumns = "chantierID",
                 onDelete = ForeignKey.CASCADE)
 })
 public class PlanExecution {
@@ -19,21 +19,19 @@ public class PlanExecution {
     private String date;
     private String file;
     private String description;
-    private int lotID; // Clé étrangère vers le lot associé
-
-    // Constructeurs, getters et setters
+    private int chantierID;
 
 
     public PlanExecution() {
     }
 
     @Ignore
-    public PlanExecution(int planExecutionID, String file, String description,String date, int lotID) {
+    public PlanExecution(int planExecutionID, String file, String description,String date, int chantierID) {
         this.planExecutionID = planExecutionID;
         this.file = file;
         this.description = description;
         this.date=date;
-        this.lotID = lotID;
+        this.chantierID = chantierID;
     }
 
     public int getPlanExecutionID() {
@@ -68,11 +66,11 @@ public class PlanExecution {
         this.date = date;
     }
 
-    public int getLotID() {
-        return lotID;
+    public int getChantierID() {
+        return chantierID;
     }
 
-    public void setLotID(int lotID) {
-        this.lotID = lotID;
+    public void setChantierID(int chantierID) {
+        this.chantierID = chantierID;
     }
 }

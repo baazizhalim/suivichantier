@@ -39,6 +39,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.room.room.runtime)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.photoview)
+    implementation(libs.mpandroidchart)
     annotationProcessor (libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

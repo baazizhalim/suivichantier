@@ -23,6 +23,14 @@
         android:text="Item"
         android:textSize="16sp" />
     <TextView
+        android:id="@+id/item_text6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Item"
+        android:textSize="16sp" />
+    <TextView
         android:id="@+id/item_text3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

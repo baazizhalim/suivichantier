@@ -55,6 +55,7 @@ public class MenuPrincipal extends AppCompatActivity {
             Button reservesButton = findViewById(R.id.reserves_button);
             Button tachesButton = findViewById(R.id.taches_button);
             Button notesButton = findViewById(R.id.notes_button);
+            Button stat = findViewById(R.id.stat);
 
             listeLots.forEach(lot->{
                 switch(lot.getDescription()) {
@@ -156,6 +157,20 @@ public class MenuPrincipal extends AppCompatActivity {
                 }
             });
 
+            stat.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Intent intent1 = new Intent(MenuPrincipal.this, Statistiques.class);
+                    intent1.putExtra("nomEntreprise", nomEntreprise);
+                    intent1.putExtra("entrepriseID", entrepriseID);
+                    intent1.putExtra("typeEntreprise", typeEntreprise);
+                    intent1.putExtra("nomChantier", nomChantier);
+                    intent1.putExtra("chantierID", chantierID);
+                    startActivity(intent1);
+                }
+            });
+
             tachesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -188,11 +203,7 @@ public class MenuPrincipal extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    Intent intent1 = new Intent(MenuPrincipal.this, ListPV.class);
-                    intent1.putExtra("nomEntreprise", nomEntreprise);
-                    intent1.putExtra("entrepriseID", entrepriseID);
-                    intent1.putExtra("typeEntreprise", typeEntreprise);
-                    intent1.putExtra("nomChantier", nomChantier);
+                    Intent intent1 = new Intent(MenuPrincipal.this, AnnexePV.class);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }
@@ -202,11 +213,7 @@ public class MenuPrincipal extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    Intent intent1 = new Intent(MenuPrincipal.this, ListCom.class);
-                    intent1.putExtra("nomEntreprise", nomEntreprise);
-                    intent1.putExtra("entrepriseID", entrepriseID);
-                    intent1.putExtra("typeEntreprise", typeEntreprise);
-                    intent1.putExtra("nomChantier", nomChantier);
+                    Intent intent1 = new Intent(MenuPrincipal.this, AnnexeCom.class);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }
@@ -215,11 +222,7 @@ public class MenuPrincipal extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    Intent intent1 = new Intent(MenuPrincipal.this, ListePlanExecution.class);
-                    intent1.putExtra("nomEntreprise", nomEntreprise);
-                    intent1.putExtra("entrepriseID", entrepriseID);
-                    intent1.putExtra("typeEntreprise", typeEntreprise);
-                    intent1.putExtra("nomChantier", nomChantier);
+                    Intent intent1 = new Intent(MenuPrincipal.this, AnnexePlanExecution.class);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }

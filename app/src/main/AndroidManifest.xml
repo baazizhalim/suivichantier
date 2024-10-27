@@ -2,9 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
 
     <application
@@ -36,21 +40,37 @@
             android:name=".Login"/>
         <activity
             android:name=".MenuPrincipal"/>
+        <!--android:screenOrientation="landscape"-->
         <activity
             android:name=".Zoom"
+            android:requestLegacyExternalStorage="true"
             android:screenOrientation="landscape"/>
-        <activity
-            android:name=".AnnexeReserves"/>
-        <activity
-            android:name=".AnnexeTaches"/>
-        <activity
-            android:name=".AnnexeNotes"/>
-        <activity
-            android:name=".ListePlanExecution"/>
-        <activity
-            android:name=".ListCom"/>
-        <activity
-            android:name=".ListPV"/>
-    </application>
+
+    <activity
+        android:name=".Zoom1"
+       android:requestLegacyExternalStorage="true"
+        android:screenOrientation="landscape"/>
+
+      <activity
+          android:name=".Zoomfile"
+          android:requestLegacyExternalStorage="true"
+          android:screenOrientation="landscape"/>
+
+     <activity
+        android:name=".AnnexeReserves"/>
+     <activity
+         android:name=".AnnexeTaches"/>
+     <activity
+         android:name=".AnnexeNotes"/>
+     <activity
+         android:name=".AnnexePlanExecution"/>
+     <activity
+         android:name=".AnnexeCom"/>
+     <activity
+         android:name=".AnnexePV"/>
+
+ </application>
+
+
 
 </manifest>

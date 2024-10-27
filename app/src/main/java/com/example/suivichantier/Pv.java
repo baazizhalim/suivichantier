@@ -6,33 +6,35 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index("lotID")},foreignKeys = {
-        @ForeignKey(entity = Lot.class,
-                parentColumns = "lotID",
-                childColumns = "lotID",
+@Entity(indices = {@Index("chantierID")},foreignKeys = {
+        @ForeignKey(entity = Chantier.class,
+                parentColumns = "chantierID",
+                childColumns = "chantierID",
                 onDelete = ForeignKey.CASCADE)
 })
 public class Pv {
 
     @PrimaryKey
     private int pvID;
-    private String pv;
+    private String file;
     private String description;
     private String date;
-    private int lotID; // Clé étrangère vers le lot associé
+    private int chantierID; // Clé étrangère vers le lot associé
 
     // Constructeurs, getters et setters
+
+
 
 
     public Pv() {
     }
 @Ignore
-    public Pv(int pvID, String pv, String description, String date, int lotID) {
+    public Pv(int pvID, String file, String description, String date, int chantierID) {
         this.pvID = pvID;
-        this.pv = pv;
+        this.file = file;
         this.description = description;
         this.date = date;
-        this.lotID = lotID;
+        this.chantierID = chantierID;
     }
 
     public int getPvID() {
@@ -43,12 +45,12 @@ public class Pv {
         this.pvID = pvID;
     }
 
-    public String getPv() {
-        return pv;
+    public String getFile() {
+        return file;
     }
 
-    public void setPv(String pv) {
-        this.pv = pv;
+    public void setFile(String file) {
+        this.file = file;
     }
 
     public String getDescription() {
@@ -67,11 +69,11 @@ public class Pv {
         this.date = date;
     }
 
-    public int getLotID() {
-        return lotID;
+    public int getChantierID() {
+        return chantierID;
     }
 
-    public void setLotID(int lotID) {
-        this.lotID = lotID;
+    public void setChantierID(int chantierID) {
+        this.chantierID = chantierID;
     }
 }

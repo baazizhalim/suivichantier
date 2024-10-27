@@ -6,10 +6,10 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index("lotID")},foreignKeys = {
-        @ForeignKey(entity = Lot.class,
-                parentColumns = "lotID",
-                childColumns = "lotID",
+@Entity(indices = {@Index("chantierID")},foreignKeys = {
+        @ForeignKey(entity = Chantier.class,
+                parentColumns = "chantierID",
+                childColumns = "chantierID",
                 onDelete = ForeignKey.CASCADE)
 })
 public class Communique {
@@ -17,10 +17,10 @@ public class Communique {
     @PrimaryKey
     private int communiqueID;
 
-    private String communique;
+    private String file;
     private String description;
     private String date;
-    private int lotID; // Clé étrangère vers le lot associé
+    private int chantierID; // Clé étrangère vers le lot associé
 
     // Constructeurs, getters et setters
 
@@ -28,12 +28,12 @@ public class Communique {
     public Communique() {
     }
     @Ignore
-    public Communique(int communiqueID, String communique, String description, String date, int lotID) {
+    public Communique(int communiqueID, String file, String description, String date, int chantierID) {
         this.communiqueID = communiqueID;
-        this.communique = communique;
+        this.file = file;
         this.description = description;
         this.date = date;
-        this.lotID = lotID;
+        this.chantierID = chantierID;
     }
 
     public int getCommuniqueID() {
@@ -44,12 +44,12 @@ public class Communique {
         this.communiqueID = communiqueID;
     }
 
-    public String getCommunique() {
-        return communique;
+    public String getFile() {
+        return file;
     }
 
-    public void setCommunique(String communique) {
-        this.communique = communique;
+    public void setFile(String file) {
+        this.file = file;
     }
 
     public String getDescription() {
@@ -68,11 +68,11 @@ public class Communique {
         this.date = date;
     }
 
-    public int getLotID() {
-        return lotID;
+    public int getChantierID() {
+        return chantierID;
     }
 
-    public void setLotID(int lotID) {
-        this.lotID = lotID;
+    public void setChantierID(int chantierID) {
+        this.chantierID = chantierID;
     }
 }

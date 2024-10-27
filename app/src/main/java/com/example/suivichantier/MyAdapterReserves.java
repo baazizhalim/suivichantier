@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import java.util.List;
 
@@ -21,6 +22,8 @@ public class MyAdapterReserves extends RecyclerView.Adapter<RecyclerView.ViewHol
     private String nomEntreprise ;
     private String typeEntreprise ;
     private List<Mark> items;
+    private Plan plan ;
+    private AppDatabase mDatabase;
 
     public MyAdapterReserves(Context context,List<Mark> items,int entrepriseID , String nomEntreprise , String typeEntreprise ) {
         this.context = context;
@@ -28,6 +31,8 @@ public class MyAdapterReserves extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.entrepriseID = entrepriseID;
         this.nomEntreprise = nomEntreprise;
         this.typeEntreprise = typeEntreprise;
+        mDatabase = Room.databaseBuilder(context, AppDatabase.class, "my-database").fallbackToDestructiveMigration().allowMainThreadQueries().build();
+
     }
 
     @Override
@@ -59,12 +64,15 @@ public class MyAdapterReserves extends RecyclerView.Adapter<RecyclerView.ViewHol
             ItemViewHolder itemHolder = (ItemViewHolder) holder;
             Mark item = items.get(position - 1); // Compensate for header
             itemHolder.itemText1.setText(item.getDesignation());
-            itemHolder.itemText2.setText(String.valueOf(item.getPlanID()));
+            plan = mDatabase.planDao().getOnePlan(item.getPlanID());
+            itemHolder.itemText2.setText(String.valueOf(plan.getLotID()));
             itemHolder.itemText3.setText(item.getDate());
             itemHolder.itemText4.setText(item.getObservation());
             itemHolder.itemText5.setText(item.getStatut());
+            itemHolder.itemText6.setText(String.valueOf(item.getPlanID()));
             itemHolder.markID=item.getMarkID();
             itemHolder.planID=item.getPlanID();
+            itemHolder.lotID=plan.getLotID();
 
             itemHolder.itemText1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -72,13 +80,15 @@ public class MyAdapterReserves extends RecyclerView.Adapter<RecyclerView.ViewHol
                     // Gérer l'événement de clic sur le bouton ici
                     // Par exemple, afficher un toast ou effectuer une action
 
-                    Intent intent = new Intent(context, Zoom.class);
+                    Intent intent = new Intent(context, Zoom1.class);
                     intent.putExtra("nomEntreprise", nomEntreprise);
                     intent.putExtra("entrepriseID", entrepriseID);
                     intent.putExtra("typeEntreprise", typeEntreprise);
                     intent.putExtra("markID", item.getMarkID());
-                    intent.putExtra("planID", item.getPlanID());
-
+                    intent.putExtra("planID",item.getPlanID() );
+                    intent.putExtra("lotID",plan.getLotID());
+                    intent.putExtra("lot",item.getLot() );
+                    intent.putExtra("typeLot",item.getType() );
                     startActivity(context,intent,null);
                 }
             });
@@ -97,6 +107,7 @@ public class MyAdapterReserves extends RecyclerView.Adapter<RecyclerView.ViewHol
         TextView headerTitle3;
         TextView headerTitle4;
         TextView headerTitle5;
+        TextView headerTitle6;
 
         HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -105,6 +116,7 @@ public class MyAdapterReserves extends RecyclerView.Adapter<RecyclerView.ViewHol
             headerTitle3 = itemView.findViewById(R.id.header_title3);
             headerTitle4 = itemView.findViewById(R.id.header_title4);
             headerTitle5 = itemView.findViewById(R.id.header_title5);
+            headerTitle6 = itemView.findViewById(R.id.header_title6);
         }
     }
 
@@ -114,8 +126,10 @@ public class MyAdapterReserves extends RecyclerView.Adapter<RecyclerView.ViewHol
         TextView itemText3;
         TextView itemText4;
         TextView itemText5;
+        TextView itemText6;
         String markID;
         int planID;
+        int lotID;
 
         ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -124,6 +138,7 @@ public class MyAdapterReserves extends RecyclerView.Adapter<RecyclerView.ViewHol
             itemText3 = itemView.findViewById(R.id.item_text3);
             itemText4 = itemView.findViewById(R.id.item_text4);
             itemText5 = itemView.findViewById(R.id.item_text5);
+            itemText6 = itemView.findViewById(R.id.item_text6);
         }
     }
 }

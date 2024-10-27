@@ -8,7 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-public static String ip="192.168.1.5";
+public static String ip="192.168.1.3";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

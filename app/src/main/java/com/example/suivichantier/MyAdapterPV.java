@@ -1,23 +1,34 @@
 package com.example.suivichantier;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import java.util.List;
 
 public class MyAdapterPV extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
+    private Context context;
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
 
-    private List<String> items;
+    private List<Pv> items;
 
-    public MyAdapterPV(List<String> items) {
+    private AppDatabase mDatabase;
+
+    public MyAdapterPV(Context context,List<Pv> items ) {
+        this.context = context;
         this.items = items;
+
+        mDatabase = Room.databaseBuilder(context, AppDatabase.class, "my-database").fallbackToDestructiveMigration().allowMainThreadQueries().build();
+
     }
 
     @Override
@@ -44,11 +55,26 @@ public class MyAdapterPV extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof HeaderViewHolder) {
             HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
-            headerHolder.headerTitle.setText("Liste des Items");
+            //headerHolder.headerTitle.setText("Liste des Items");
         } else {
             ItemViewHolder itemHolder = (ItemViewHolder) holder;
-            String item = items.get(position - 1); // Compensate for header
-            itemHolder.itemText.setText(item);
+            Pv item = items.get(position - 1); // Compensate for header
+            itemHolder.itemText1.setText(item.getDescription());
+            itemHolder.itemText2.setText(item.getFile());
+            itemHolder.itemText3.setText(item.getDate());
+            itemHolder.pvID=item.getPvID();
+
+
+            itemHolder.itemText1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, Zoomfile.class);
+                    intent.putExtra("file", item.getFile());
+                    intent.putExtra("type", "pv");
+                    startActivity(context,intent,null);
+                }
+            });
+
         }
     }
 
@@ -58,20 +84,34 @@ public class MyAdapterPV extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
-        TextView headerTitle;
+        TextView headerTitle1;
+        TextView headerTitle2;
+        TextView headerTitle3;
+
 
         HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
-            headerTitle = itemView.findViewById(R.id.header_title);
+            headerTitle1 = itemView.findViewById(R.id.header_title1);
+            headerTitle2 = itemView.findViewById(R.id.header_title2);
+            headerTitle3 = itemView.findViewById(R.id.header_title3);
+
         }
     }
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
-        TextView itemText;
+        TextView itemText1;
+        TextView itemText2;
+        TextView itemText3;
+
+        int pvID;
+
 
         ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            itemText = itemView.findViewById(R.id.item_text);
+            itemText1 = itemView.findViewById(R.id.item_description);
+            itemText2 = itemView.findViewById(R.id.item_file);
+            itemText3 = itemView.findViewById(R.id.item_date);
+
         }
     }
 }

@@ -15,4 +15,7 @@ public interface PvDao {
     void insertAll(List<Pv> pvs);
     @Query("SELECT * FROM pv")
     List<Pv> getAllPvs();
+
+    @Query("SELECT * FROM pv where chantierID=:chantierID")
+    List<Pv> getAllPvs(int chantierID);
 }

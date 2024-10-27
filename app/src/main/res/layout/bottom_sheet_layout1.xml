@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FCF3CACA"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <!-- Ajoutez ici vos vues (TextView, EditText, Button, etc.) -->
+    <TextView
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="116dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="sans-serif-black"
+        android:padding="5dp"
+        android:text="Marque"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="5dp"
+            android:text="Désignation : "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/designation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="5dp"
+            android:text="Observation : "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/observation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="5dp"
+            android:text="Priorité : "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/priorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:text="Type : "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:textSize="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:text="Date d'ajout : "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/dateAjout"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:text="Etat : "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/etat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Etat"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp"
+            android:text="Lot : "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/lot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Etat"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="5dp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/barePhoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnCapture"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_centerInParent="true"
+            android:background="@color/material_dynamic_primary50"
+            android:onClick="openCamera"
+            android:paddingHorizontal="5dp"
+            android:text="Capture Image" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/bottom_ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:background="@android:color/holo_green_light"
+            android:text="Valider" />
+
+        <Button
+            android:id="@+id/bottom_delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:background="@color/design_default_color_error"
+            android:text="Effacer" />
+
+        <Button
+            android:id="@+id/bottom_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:background="#7E7A7A"
+            android:text="Annuler" />
+
+        <Button
+            android:id="@+id/action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="Modifier Etat" />
+    </LinearLayout>
+</LinearLayout>

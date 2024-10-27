@@ -126,7 +126,7 @@ public class Bienvenue extends AppCompatActivity {
         // while building request
         // we give our form
         // as a parameter to post()
-        Request request = new Request.Builder().url("http://" + MainActivity.ip + ":3000/mobile/synchro/")
+        Request request = new Request.Builder().url("http://" + MainActivity.ip + ":3000/mobile/synchro/base/")
                 .post(body)
                 .build();
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -208,7 +208,7 @@ public class Bienvenue extends AppCompatActivity {
 
                         });
                     runOnUiThread(() -> {
-                        Toast.makeText(Bienvenue.this, "Shyncronisation successful ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Bienvenue.this, "Synchronisation successful ", Toast.LENGTH_SHORT).show();
                         handler.post(Bienvenue.this::hideProgressDialog);
                     });
 

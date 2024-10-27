@@ -1,5 +1,6 @@
 package com.example.suivichantier;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
@@ -19,31 +20,32 @@ import androidx.room.PrimaryKey;
 })
 public class Photo {
 
-    @PrimaryKey
-    private int photoID;
+    @PrimaryKey @NonNull
+    private String photoID;
     private String file;
     private String date;
     private String markID; // Clé étrangère vers la mark associé
     private int entrepriseID; // Clé étrangère vers l'entrepise associé
-    // Constructeurs, getters et setters
 
+    //private boolean  synchro;
 
     public Photo() {
     }
     @Ignore
-    public Photo(int photoID, String file, String date, String markID, int entrepriseID) {
+    public Photo(String photoID, String file, String date, String markID, int entrepriseID) {
         this.photoID = photoID;
         this.file = file;
         this.date = date;
         this.markID = markID;
         this.entrepriseID = entrepriseID;
+        //this.synchro=false;
     }
 
-    public int getPhotoID() {
+    public String getPhotoID() {
         return photoID;
     }
 
-    public void setPhotoID(int photoID) {
+    public void setPhotoID(String photoID) {
         this.photoID = photoID;
     }
 
@@ -78,4 +80,12 @@ public class Photo {
     public void setEntrepriseID(int entrepriseID) {
         this.entrepriseID = entrepriseID;
     }
+
+//    public boolean isSynchro() {
+//        return synchro;
+//    }
+//
+//    public void setSynchro(boolean synchro) {
+//        this.synchro = synchro;
+//    }
 }

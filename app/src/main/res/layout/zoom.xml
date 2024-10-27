@@ -10,6 +10,31 @@
     android:layout_height="60dp"
     android:orientation="horizontal"
     app:layout_constraintTop_toTopOf="parent">
+    <Spinner
+        android:id="@+id/spinnerPlans"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"    />
+    <Spinner
+        android:id="@+id/spinnerTypeLot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="20dp"    />
+
+    <Spinner
+        android:id="@+id/spinnerFilter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="20dp"    />
+
+    <Spinner
+        android:id="@+id/spinnerFilterMark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="20dp"    />
 </LinearLayout>
 
 <FrameLayout
@@ -26,7 +51,30 @@
         android:scaleType="matrix"
         android:contentDescription="image1_desc"/>
 
+    <!-- Zoom In button -->
 
+    <!-- Zoom Out button -->
+
+
+    <ImageButton
+        android:id="@+id/zoom_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/btn_plus" />
+
+    <!-- Zoom Out button -->
+    <ImageButton
+        android:id="@+id/zoom_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="80dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/btn_minus" />
 
 </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

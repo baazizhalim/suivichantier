@@ -15,4 +15,16 @@ public interface PhotoDao {
     void insertAll(List<Photo> photos);
     @Query("SELECT * FROM photo")
     List<Photo> getAllPhotos();
+
+    @Query("SELECT * FROM photo where markID=:markID")
+    List<Photo> getAllPhotosMark(String markID);
+
+    @Query("SELECT * FROM photo where photoID=:photoID")
+    Photo getOnePhoto(int photoID);
+
+    @Query("delete FROM photo where file=:file")
+    int deletePhoto(String file);
+
+    @Query("SELECT file FROM photo where markID=:markID")
+    List<String> getAllfilesMark(String markID);
 }

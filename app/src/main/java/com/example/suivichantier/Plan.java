@@ -66,4 +66,9 @@ public class Plan {
     public void setLotID(int lotID) {
         this.lotID = lotID;
     }
+
+    @Override
+    public String toString() {
+        return file; // Cette méthode détermine ce qui est affiché dans le Spinner
+    }
 }

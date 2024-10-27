@@ -26,6 +26,15 @@
         android:textSize="18sp"
         android:textStyle="bold" />
     <TextView
+        android:id="@+id/header_title6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Plan"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
         android:id="@+id/header_title3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

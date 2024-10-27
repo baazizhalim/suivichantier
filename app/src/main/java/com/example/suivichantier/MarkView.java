@@ -1,15 +1,15 @@
 package com.example.suivichantier;
 
-import android.widget.ImageView;
+import android.widget.ImageButton;
 
 public class MarkView {
 
         private Mark mark;
-        private ImageView imageView;
+        private ImageButton imageButton;
 
-        public MarkView(Mark mark, ImageView imageView) {
+        public MarkView(Mark mark, ImageButton imageButton) {
             this.mark = mark;
-            this.imageView = imageView;
+            this.imageButton = imageButton;
         }
 
         public Mark getMark() {
@@ -20,12 +20,12 @@ public class MarkView {
             this.mark = mark;
         }
 
-        public ImageView getImageView() {
-            return this.imageView;
+        public ImageButton getImageButton() {
+            return this.imageButton;
         }
 
-        public void setImageView(ImageView imageView) {
-            this.imageView = imageView;
+        public void setImageView(ImageButton imageButton) {
+            this.imageButton = imageButton;
         }
 
 

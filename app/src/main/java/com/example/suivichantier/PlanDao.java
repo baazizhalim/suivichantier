@@ -12,9 +12,12 @@ public interface PlanDao {
     void insert(Plan plan );
     @Insert
     void insertAll(List<Plan> plans);
-    @Query("SELECT * FROM plan")
+    @Query("SELECT * FROM `plan`")
     List<Plan> getAllPlans();
 
-    @Query("SELECT * FROM plan where lotID=:lotID")
+    @Query("SELECT * FROM `plan` where planID=:planID")
+    Plan getOnePlan(int planID);
+
+    @Query("SELECT * FROM `plan` where lotID=:lotID")
     List<Plan> getAllPlans(int lotID);
 }

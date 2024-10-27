@@ -15,4 +15,7 @@ public interface PlanExecutionDao {
     void insertAll(List<PlanExecution> planExecutions);
     @Query("SELECT * FROM planexecution")
     List<PlanExecution> getAllPlanExecutions();
+
+    @Query("SELECT * FROM planexecution where chantierID=:chantierID")
+    List<PlanExecution> getAllPlanExecutions(int chantierID);
 }

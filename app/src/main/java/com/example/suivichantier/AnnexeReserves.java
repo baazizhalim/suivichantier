@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class AnnexeReserves extends AppCompatActivity {
     private AppDatabase mDatabase;
@@ -35,21 +36,21 @@ public class AnnexeReserves extends AppCompatActivity {
 
 
         if(Objects.equals(typeEntreprise, "client")){
-            marks=mDatabase.markDao().getAllMarks();
+            marks=mDatabase.markDao().getAllMarksClient(chantierID);
 
 
         } else if(Objects.equals(typeEntreprise, "ES")) {
-            marks = mDatabase.markDao().getAllMarks();
+            marks = mDatabase.markDao().getAllMarksES(entrepriseID);
 
         }else {
-            marks = mDatabase.markDao().getAllMarks();
+            marks = mDatabase.markDao().getAllMarksER(entrepriseID);
 
         }
 
+List <Mark> markReserves=marks.stream().filter(mark->mark.getType().equals("reserve")).collect(Collectors.toList());
 
 
-
-        MyAdapterReserves adapter = new MyAdapterReserves(this,marks,entrepriseID, nomEntreprise, typeEntreprise);
+        MyAdapterReserves adapter = new MyAdapterReserves(this,markReserves,entrepriseID, nomEntreprise, typeEntreprise);
         recyclerView.setAdapter(adapter);
     }
 }
