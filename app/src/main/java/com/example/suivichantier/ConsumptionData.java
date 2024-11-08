@@ -3,7 +3,8 @@ package com.example.suivichantier;
 public class ConsumptionData {
     private String type;
     private int nbr;
-    private ConsumptionData (String type, int nbr){
+
+    public ConsumptionData (String type, int nbr ){
         this.type=type;
         this.nbr=nbr;
     }

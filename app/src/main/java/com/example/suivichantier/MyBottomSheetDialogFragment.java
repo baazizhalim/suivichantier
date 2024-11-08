@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,6 +39,8 @@ import androidx.room.Room;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -83,6 +87,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
     Button buttonOK;
     Button buttonModifier;
     Button buttonSynchroMark;
+    Button btnCapture;
     int statut = 0;
     boolean nouveauMark = false;
     private String[] valeurs = new String[7];
@@ -118,19 +123,8 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         rows[0] = fenetre.findViewById(R.id.row1);
         rows[1] = fenetre.findViewById(R.id.row2);
 
-        Button btnCapture = fenetre.findViewById(R.id.btnCapture);
-        btnCapture.setEnabled(false);
-        btnCapture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
-                } else {
-                    openCamera();
-                }
-            }
-        });
+
+
 
 
         // Initialisez vos vues ici
@@ -199,9 +193,11 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         if (typeEntreprise.equals("ER")) buttonDelete.setEnabled(false);
         buttonCancel = fenetre.findViewById(R.id.bottom_cancel_button);
         buttonSynchroMark = fenetre.findViewById(R.id.btnSynchroMark);
+        btnCapture = fenetre.findViewById(R.id.btnCapture);
+        btnCapture.setEnabled(false);
 
         if (mark != null) {
-            if (!typeEntreprise.equals("ER")) btnCapture.setEnabled(true);
+            if (!typeEntreprise.equals("ER")&& getNumeroPhotoDisponible(mark.getMarkID())!=0 ) btnCapture.setEnabled(true);
             designation.setText(mark.getDesignation());
             observation.setText(mark.getObservation());
             etat.setSelection(options1.indexOf(mark.getStatut()));
@@ -280,6 +276,18 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
             }
         });
 
+        btnCapture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                } else {
+                    openCamera();
+                }
+
+            }
+        });
 
         return fenetre;
     }
@@ -290,25 +298,20 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         List<Photo> photos = mDatabase.photoDao().getAllPhotosMark(markID);
         Button[] photoButtons = new Button[2];
         Button[] photoDeletes = new Button[2];
-        //Button[] photoSynchs = new Button[2];
-        i = 0;
-        for (Photo photo : photos) {
 
-            photoButtons[i] = new Button(getContext());
-            photoButtons[i].setText(photo.getFile());
-            photoButtons[i].setContentDescription(String.valueOf(photo.getPhotoID()));
-            rows[i].addView(photoButtons[i]);
-            photoDeletes[i] = new Button(getContext());
-            photoDeletes[i].setText("Delete");
-            photoDeletes[i].setContentDescription(String.valueOf(photo.getPhotoID()));
-            if (typeEntreprise.equals("ER")) photoDeletes[i].setEnabled(false);
-            rows[i].addView(photoDeletes[i]);
-            //photoSynchs[i] = new Button(getContext());
-            //photoSynchs[i].setText("Synchro");
-            //photoSynchs[i].setContentDescription(String.valueOf(photo.getPhotoID()));
-            //rows[i].addView(photoSynchs[i]);
-
-            photoButtons[i].setOnClickListener(new View.OnClickListener() {
+        final int[] i = {0};
+        photos.forEach( (Photo photo) ->{
+            int index = i[0];
+            photoButtons[index] = new Button(getContext());
+            photoButtons[index].setText(photo.getFile());
+            photoButtons[index].setContentDescription(String.valueOf(photo.getPhotoID()));
+            rows[index].addView(photoButtons[index]);
+            photoDeletes[index] = new Button(getContext());
+            photoDeletes[index].setText("Delete");
+            photoDeletes[index].setContentDescription(String.valueOf(photo.getPhotoID()));
+            if (typeEntreprise.equals("ER")) photoDeletes[index].setEnabled(false);
+            rows[index].addView(photoDeletes[index]);
+            photoButtons[index].setOnClickListener(new View.OnClickListener() {
                 float scaleFactor = 1.0f;
                 Matrix matrix = new Matrix();
 
@@ -316,12 +319,13 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
                 public void onClick(View v) {
 
                     File appDir = getContext().getExternalFilesDir(null); // Répertoire principal de l'application
-                    File myDir = new File(appDir, "/photos"); // Sous-répertoire
+                    File myDir = new File(appDir, "/photos/"+ mark.getMarkID() ); // Sous-répertoire
                     if (!myDir.exists()) {
                         myDir.mkdirs();
                     }
                     //Photo photo = mDatabase.photoDao().getOnePhoto(Integer.parseInt(v.getContentDescription().toString()));
                     String imagePath = myDir + "/" + photo.getFile();
+
                     // Charger l'image à partir du fichier JPEG
                     Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath);
 
@@ -403,18 +407,15 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
                     dialog.show();
                 }
             });
-            photoDeletes[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteLocalFile(photo.getFile());
+            photoDeletes[index].setOnClickListener(v -> {
+                deleteLocalFile(photo.getFile());
+                rows[index].removeAllViews();
+                btnCapture.setEnabled(true);
 
 
-                }
             });
-
-            i++;
-            if (i == 2) break;
-        }
+            i[0]++;
+        });
 
 
     }
@@ -436,21 +437,23 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    String responseData = response.body().string();
-                    try {
-                        JSONObject jsonObject = new JSONObject(responseData);
 
 
-                        // Obtenir la liste des fichiers du serveur
-                        JSONArray serverFiles = jsonObject.getJSONArray("files");
+
+                        String jsonResponse = response.body().string();
+
+                        // Utiliser Gson pour convertir la réponse JSON en une liste
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<List<String>>(){}.getType();
+                        List<String> serverFiles = gson.fromJson(jsonResponse, listType);
 
                         // Liste des fichiers présents localement sur le client
                         List<String> localFiles = getLocalFiles(mark.getMarkID());
 
                         // Parcourir les fichiers du serveur
                         if (typeEntreprise.equals("ER")) {
-                            for (int i = 0; i < serverFiles.length(); i++) {
-                                String serverFile = serverFiles.getString(i);
+                            for (int i = 0; i < serverFiles.size(); i++) {
+                                String serverFile = serverFiles.get(i);
 
                                 // Si le fichier du serveur n'est pas présent localement, on le télécharge
                                 if (!localFiles.contains(serverFile)) {
@@ -465,9 +468,9 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
                                     deleteLocalFile(localFile);
                                 }
                             }
-                        } else if (typeEntreprise.equals("ES")) {
-                            for (int i = 0; i < serverFiles.length(); i++) {
-                                String serverFile = serverFiles.getString(i);
+                        } else if (typeEntreprise.equals("ES")||typeEntreprise.equals("client")) {
+                            for (int i = 0; i < serverFiles.size(); i++) {
+                                String serverFile = serverFiles.get(i);
 
                                 // Si le fichier du serveur n'est pas présent localement, on le supprime
                                 if (!localFiles.contains(serverFile)) {
@@ -484,9 +487,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
                             }
                         }
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
                 }
 
             }
@@ -498,15 +499,9 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         OkHttpClient client = new OkHttpClient();
 
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", remoteFile)
-                .addFormDataPart("markID", mark.getMarkID())
-                .build();
-
         Request request = new Request.Builder()
-                .url("http://" + MainActivity.ip + ":3000/upload/delete/photo/" + entrepriseID)
-                .delete(requestBody)
+                .url("http://" + MainActivity.ip + ":3000/upload/delete/photo/" + remoteFile)
+                .delete()
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -596,6 +591,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         if (file.exists()) {
             file.delete();
             deleteLocalyFilefromDB(fileName);
+
         }
     }
 
@@ -681,6 +677,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
             String xString = parts[parts.length - 1];
             // Convertir cette valeur en entier
             num = Integer.parseInt(xString);
+            num = num % 2+1;
         }
 
         return num;
@@ -759,7 +756,6 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
         layoutParams.height = getScreenHeight(); // Par exemple, définir à 75% de la hauteur de l'écran
         bottomSheet.setLayoutParams(layoutParams);
-
 
     }
 

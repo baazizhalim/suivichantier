@@ -51,18 +51,43 @@ public interface MarkDao {
     @Update
     void update(Mark mark );
 
-    @Query("SELECT * FROM mark where type=:type and lot=:lot and statut=:etat and date> :dateDebut and date < :dateFin and planID=:planID" )
-    List<Mark> getMarkscriteres(String type,String lot,String etat,String dateDebut,String dateFin, String planID);
+    @Query("SELECT * FROM mark where  lot=:lot  and date >= :dateDebut and date <= :dateFin and planID=:planID" )
+    List<Mark> getMarkscriteres1(String lot,String dateDebut,String dateFin, String planID);
+
+    @Query("SELECT * FROM mark where statut=:etat and lot = :lot  and date>= :dateDebut and date <= :dateFin and planID=:planID" )
+    List<Mark> getMarkscriteres2(String etat, String lot, String dateDebut, String dateFin, String planID);
+
+    @Query("SELECT * FROM mark where type=:type and lot=:lot  and date>= :dateDebut and date <= :dateFin and planID=:planID" )
+    List<Mark> getMarkscriteres3(String type,String lot,String dateDebut,String dateFin, String planID);
+
+    @Query("SELECT * FROM mark where type=:type and lot=:lot and statut=:etat and date>= :dateDebut and date <= :dateFin and planID=:planID" )
+    List<Mark> getMarkscriteres4(String type,String etat,String lot,String dateDebut,String dateFin, String planID);
+
+    @Query("SELECT * FROM mark where lot not in ('INFRA', 'SUPER', 'VRD') and date> :dateDebut and date < :dateFin and planID=:planID" )
+    List<Mark> getMarkscriteres5(String dateDebut, String dateFin, String planID);
+
+    @Query("SELECT * FROM mark where type=:typeMark and lot not in ('INFRA', 'SUPER', 'VRD')  and date>= :dateDebut and date <= :dateFin and planID=:planID" )
+    List<Mark> getMarkscriteres6(String typeMark,  String dateDebut, String dateFin, String planID);
+
+    @Query("SELECT * FROM mark where statut=:etat and lot not in ('INFRA', 'SUPER', 'VRD')  and date>= :dateDebut and date <= :dateFin and planID=:planID" )
+    List<Mark> getMarkscriteres7(String etat,String dateDebut,String dateFin, String planID);
+
+    @Query("SELECT * FROM mark where type=:type and statut=:etat and lot not in ('INFRA', 'SUPER', 'VRD') and statut=:etat and date>= :dateDebut and date <= :dateFin and planID=:planID" )
+    List<Mark> getMarkscriteres8(String type,String etat,String dateDebut,String dateFin, String planID);
 
 
-    @Query("SELECT lot,count(markID) FROM mark where type=:type and statut=:etat and date> :startDate and date < :endDate and planId in(select planID from `Plan` where lotID in (select lotID from lot where chantierId=:chantierID)) group by lot")
+    //lot not in ('INFRA', 'SUPER', 'VRD')
+
+
+    @Query("SELECT lot as type,count(markID) as nbr FROM mark where type=:type and statut=:etat and date> :startDate and date < :endDate and planId in(select planID from `Plan` where lotID in (select lotID from lot where chantierId=:chantierID)) group by lot")
     List<ConsumptionData> getConsumptionBetweenDates1(String type,String etat, int chantierID, String startDate, String endDate);
 
-    @Query("SELECT lot,count(markID) FROM mark where type=:type and date> :startDate and date < :endDate and planId in(select planID from `Plan` where lotID in (select lotID from lot where chantierId=:chantierID)) group by lot")
+    @Query("SELECT lot as type,count(markID) as nbr FROM mark where type=:type and date> :startDate and date < :endDate and planId in(select planID from `Plan` where lotID in (select lotID from lot where chantierId=:chantierID)) group by lot")
     List<ConsumptionData> getConsumptionBetweenDates2(String type, int chantierID, String startDate, String endDate);
 
-    @Query("SELECT lot,count(markID) FROM mark where  date> :startDate and date < :endDate and planId in(select planID from `Plan` where lotID in (select lotID from lot where chantierId=:chantierID)) group by lot")
+    @Query("SELECT lot as type,count(markID) as nbr  FROM mark where  date> :startDate and date < :endDate and planId in(select planID from `Plan` where lotID in (select lotID from lot where chantierId=:chantierID)) group by lot")
     List<ConsumptionData> getConsumptionBetweenDates3(int chantierID, String startDate, String endDate);
 
-
+    @Query("SELECT lot as type,count(markID) as nbr  FROM mark where  statut=:etat and date> :startDate and date < :endDate and planId in(select planID from `Plan` where lotID in (select lotID from lot where chantierId=:chantierID)) group by lot")
+    List<ConsumptionData> getConsumptionBetweenDates4(String etat, int chantierID, String startDate, String endDate);
 }

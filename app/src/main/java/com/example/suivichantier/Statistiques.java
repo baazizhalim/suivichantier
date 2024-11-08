@@ -13,6 +13,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -24,7 +25,7 @@ import java.util.List;
 
 public class Statistiques extends AppCompatActivity {
 
-    private BarChart barChart;
+    //private BarChart barChart;
     private AppDatabase mDatabase;
     private int entrepriseID ;
     private String nomEntreprise,typeEntreprise, nomChantier;
@@ -76,8 +77,8 @@ public class Statistiques extends AppCompatActivity {
 valider.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View v) {
-        String startDate=dateDebut.getText().toString();
-        String endDate=dateFin.getText().toString();
+        String startDate=dateDebut.getText().toString();if(startDate.isEmpty())startDate="0000-00-00";
+        String endDate=dateFin.getText().toString();if(endDate.isEmpty())endDate="5000-00-00";
         String type=typeMark.getSelectedItem().toString();
         String etat=statut.getSelectedItem().toString();
 
@@ -93,11 +94,18 @@ valider.setOnClickListener(new View.OnClickListener() {
 
         BarDataSet barDataSet = new BarDataSet(barEntries, "Marques");
         BarData barData = new BarData(barDataSet);
+        barData.setBarWidth(0.5f);
         barChart.setData(barData);
-
         // Personnalisation optionnelle
-        barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
+        //barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
+
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setGranularity(1f);  // Assurer une légende par barre
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawLabels(true);
         barChart.animateY(1000);
+
         barChart.invalidate();
 
     }
@@ -109,6 +117,7 @@ valider.setOnClickListener(new View.OnClickListener() {
 
         if(!type.equals("Tout") && etat.equals("Tout")) return mDatabase.markDao().getConsumptionBetweenDates2(type,ChantierID,startDate, endDate);
         else if( type.equals("Tout") && etat.equals("Tout") ) return mDatabase.markDao().getConsumptionBetweenDates3(ChantierID,startDate, endDate);
+        else if( type.equals("Tout") && !etat.equals("Tout") ) return mDatabase.markDao().getConsumptionBetweenDates4(etat,ChantierID,startDate, endDate);
         else return mDatabase.markDao().getConsumptionBetweenDates1(type,etat,ChantierID,startDate, endDate);
 
     }

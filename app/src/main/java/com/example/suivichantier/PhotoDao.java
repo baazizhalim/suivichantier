@@ -1,6 +1,7 @@
 package com.example.suivichantier;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -27,4 +28,7 @@ public interface PhotoDao {
 
     @Query("SELECT file FROM photo where markID=:markID")
     List<String> getAllfilesMark(String markID);
+
+    @Delete
+    int delete(Photo photo);
 }

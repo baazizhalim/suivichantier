@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/fichier_2_100">
+
+    <TextView
+        android:id="@+id/titre"
+        android:layout_width="1251dp"
+        android:layout_height="76dp"
+        android:gravity="center"
+        android:text="Liste des PVs "
+        android:textSize="34sp"
+        android:textColor="@color/white"
+        />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/titre"
+        android:layout_marginTop="43dp"
+        android:textColor="@color/white"/>
 </RelativeLayout>

@@ -69,6 +69,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Zoom extends AppCompatActivity {
+
     private   final int PERMISSION_REQUEST_CODE = 100;
     private   final String TAG = "Zoom";
     protected   ImageView imageView1;
@@ -85,7 +86,7 @@ public class Zoom extends AppCompatActivity {
     //protected   List<Mark> marksLot=new ArrayList<>();
     //protected   List<Mark> marksAffiches = new ArrayList<>();
     protected   List<MarkView> markViews = new ArrayList<>();
-    private Plan selectedPlan;
+    public Plan selectedPlan;
     private int pagex,pagey;
     private List<Plan> plans = new ArrayList<>();
     private OkHttpClient client;
@@ -96,12 +97,15 @@ public class Zoom extends AppCompatActivity {
     private int entrepriseID ;
     private int lotID ;
     private String typeLot ;
-   private Spinner spinnerPlans;
+    private Spinner spinnerPlans;
+    private ArrayAdapter<Plan> adapterPlans;
     //private Spinner spinnerFilter;
     //private Spinner spinnerFilterMark;
     //private Spinner spinnerTypeLot;
     private String nomEntreprise,typeEntreprise, nomChantier;
     private int  chantierID;
+
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -131,8 +135,8 @@ public class Zoom extends AppCompatActivity {
         layout = findViewById(R.id.layout);
         imageView1 = findViewById(R.id.image1);
         plans = mDatabase.planDao().getAllPlans(lotID);
-        //plans = synchroniserPlans(plans);
-        spinnerPlans = findViewById(R.id.spinnerPlans);
+        Plan p0=new Plan(-1,"Choisir un Plan","Choisir un Plan",0);
+        plans.add(0,p0);
 
         ImageButton zoomInButton = findViewById(R.id.zoom_in_button);
         ImageButton zoomOutButton = findViewById(R.id.zoom_out_button);
@@ -172,11 +176,11 @@ public class Zoom extends AppCompatActivity {
 
 
 
-        Plan p0=new Plan(-1,"Choisir un Plan","Choisir un Plan",0);
-        plans.add(0,p0);
-        ArrayAdapter<Plan> adapterPlans = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, plans);
-        adapterPlans.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerPlans.setAdapter(adapterPlans);
+//        Plan p0=new Plan(-1,"Choisir un Plan","Choisir un Plan",0);
+//        plans.add(0,p0);
+//        adapterPlans = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, plans);
+//        adapterPlans.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinnerPlans.setAdapter(adapterPlans);
 
 
         //scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
@@ -225,60 +229,57 @@ public class Zoom extends AppCompatActivity {
             }
             return true;
         });
-        spinnerPlans.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                    selectedPlan = (Plan) parent.getItemAtPosition(position);
-                    if (selectedPlan.getPlanID() != -1) {
-                        showProgressDialog();
-                        executorService.execute(() -> downloadFile());
-                        markViews.forEach(markview -> {
-                            layout.removeView(markview.getImageButton());
-                        });
-                        markViews.clear();
-                        marks.clear();
-                        scaleFactor = 1.0f;
-                        matrix = new Matrix();
-                        imageView1.setImageMatrix(matrix);
-                        displayPdf(selectedPlan.getFile(), selectedPlan.getDescription(), selectedPlan.getPlanID());
-                        marks = getAllMarks(selectedPlan);
-                        //marks=synchroniserMarks(marks);
-                        drawAllMarks(marks);
-                        handler.post(Zoom.this::hideProgressDialog);
-                    }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
 
     }
 
-    private List<Plan> synchroniserPlans(List<Plan> plans) {
-        return plans;
+    private void synchroniserPlans() {
+        plans.clear();
+        plans.addAll(mDatabase.planDao().getAllPlans(lotID));
+        Plan p0=new Plan(-1,"Choisir un Plan","Choisir un Plan",0);
+        plans.add(0,p0);
+
     }
 
-    private void synchroniserMarks(Plan plan) {
-        List<Mark> marksLocales=new ArrayList<>();
+    private void synchroniserMarks(Plan plan, OnMarksLoadedListener listener) {
+        List<Mark> marksLocales;
+
         List<Mark> marksDistantes=new ArrayList<>();
 
         marksLocales=getAllMarks(plan);
 
-        List<Mark> finalMarksLocales = marksLocales;
         getAllMarksDistant(plan, marksDist -> {
-            // Handle the loaded marks here
+            marksDistantes.clear();
             marksDistantes.addAll(marksDist);
-            verifierMarksCommunes(finalMarksLocales,marksDistantes);
-            verifierMarksDistantesDifferentes(finalMarksLocales,marksDistantes);
 
+            Thread t1=new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    verifierMarksCommunes(marksLocales,marksDistantes);
+                }
+            });
+
+            Thread t2=new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    verifierMarksDistantesDifferentes(marksLocales,marksDistantes);
+                }
+            });
+
+           t1.start();
+           t2.start();
+
+            try {
+                t1.join();
+                t2.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            listener.onMarksLoaded(mDatabase.markDao().getAllMarks(plan.getPlanID()));
 
         });
-
 
     }
 
@@ -302,7 +303,7 @@ public class Zoom extends AppCompatActivity {
                         deleteLocalMark(localMark);
                     }
                 }
-            } else if (typeEntreprise.equals("ES")) {
+            } else if (typeEntreprise.equals("ES")||typeEntreprise.equals("client")) {
                 for (int i = 0; i < marksDistantes.size(); i++) {
                     Mark markDist = marksDistantes.get(i);
 
@@ -324,7 +325,7 @@ public class Zoom extends AppCompatActivity {
     }
 
     private void uploadMark(Mark localMark) {
-        OkHttpClient okHttpClient = null;
+        OkHttpClient okHttpClient = new OkHttpClient();
         Gson gson = new Gson();
         String jsonString = gson.toJson(localMark);
 
@@ -372,16 +373,14 @@ public class Zoom extends AppCompatActivity {
 
 
     private void deleteRemoteMark(Mark markDist) {
-        OkHttpClient okHttpClient = null;
+        OkHttpClient okHttpClient = new OkHttpClient();
 
-        RequestBody body = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("markID", markDist.getMarkID())
+
+        Request request = new Request.Builder()
+                .url("http://" + MainActivity.ip + ":3000/mobile/delete/mark/"+markDist.getMarkID())
+                .delete()
                 .build();
 
-        Request request = new Request.Builder().url("http://" + MainActivity.ip + ":3000/mobile/delete/mark")
-                .delete(body)
-                .build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(
@@ -565,6 +564,7 @@ public class Zoom extends AppCompatActivity {
     }
 
     private void getAllMarksDistant(Plan plan, OnMarksLoadedListener listener) {
+
         Request request = new Request.Builder()
                 .url("http://" + MainActivity.ip + ":3000/mobile/getMarks/" + plan.getPlanID())
                 .build();
@@ -595,11 +595,9 @@ public class Zoom extends AppCompatActivity {
 
                 String jsonResponse = response.body().string();
                 Type markListType = new TypeToken<List<Mark>>() {}.getType();
-                List<Mark> marks = gson.fromJson(jsonResponse, markListType);
+                List<Mark> marksgson = gson.fromJson(jsonResponse, markListType);
+                listener.onMarksLoaded(marksgson); // Pass the marks back via the listener
 
-                runOnUiThread(() -> {
-                    listener.onMarksLoaded(marks); // Pass the marks back via the listener
-                });
             }
         });
     }
@@ -700,23 +698,26 @@ public class Zoom extends AppCompatActivity {
     }
 
     public void afficherMarkFiltres(List<Mark> listeMarks) {
-        showProgressDialog();
+        //showProgressDialog();
         //executorService.execute(() -> downloadFile());
+        runOnUiThread(() -> {
+
+
         markViews.forEach(markview -> {
             layout.removeView(markview.getImageButton());
         });
         markViews.clear();
         marks.clear();
         marks.addAll(listeMarks);
-        scaleFactor = 1.0f;
-        matrix = new Matrix();
-        imageView1.setImageMatrix(matrix);
+        //scaleFactor = 1.0f;
+        //matrix = new Matrix();
+        //imageView1.setImageMatrix(matrix);
         //displayPdf(selectedPlan.getFile(), selectedPlan.getDescription(), selectedPlan.getPlanID());
-        //marks = getAllMarks(selectedPlan.getPlanID());
+        //marks = getAllMarks(selectedPlan);
         //marks=synchroniserMarks(marks);
         drawAllMarks(marks);
-        handler.post(Zoom.this::hideProgressDialog);
-
+        //handler.post(Zoom.this::hideProgressDialog);
+        });
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -901,6 +902,45 @@ public class Zoom extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        adapterPlans = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, plans);
+        adapterPlans.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Récupérer le Spinner depuis le menu
+        MenuItem item = menu.findItem(R.id.spinner_item);
+        spinnerPlans = (Spinner) item.getActionView();
+        spinnerPlans.setAdapter(adapterPlans);
+        spinnerPlans.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                selectedPlan = (Plan) parent.getItemAtPosition(position);
+                if (selectedPlan.getPlanID() != -1) {
+                    showProgressDialog();
+                    executorService.execute(() -> downloadFile());
+                    markViews.forEach(markview -> {
+                        layout.removeView(markview.getImageButton());
+                    });
+                    markViews.clear();
+                    marks.clear();
+                    scaleFactor = 1.0f;
+                    matrix = new Matrix();
+                    imageView1.setImageMatrix(matrix);
+                    displayPdf(selectedPlan.getFile(), selectedPlan.getDescription(), selectedPlan.getPlanID());
+                    marks = getAllMarks(selectedPlan);
+                    //marks=synchroniserMarks(marks);
+                    drawAllMarks(marks);
+                    handler.post(Zoom.this::hideProgressDialog);
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         return true;
     }
 
@@ -908,31 +948,24 @@ public class Zoom extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-//        if (id == R.id.action_search) {
-//
-//            return true;
-//        } else
-
+        if (id == R.id.action_synch_plan) {
+            synchroniserPlans();
+            return true;
+        }
         if (id == R.id.filtre) {
             afficherFenetrefiltre(selectedPlan);
             return true;
-        }else if (id == R.id.action_synch) {
-            synchroniserMarks(selectedPlan);
-            afficherMarkFiltres(marks);
+        }
+        else if (id == R.id.action_synch) {
+            synchroniserMarks(selectedPlan, this::afficherMarkFiltres);
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void synchroLocale() {
-    }
 
-    private void afficherMark() {
-    }
-
-    private void filtrer() {
-    }
 
     public   void afficherFenetrefiltre(Plan  plan) {
         MyBottomSheetDialogFragmentFilter bottomSheet = new MyBottomSheetDialogFragmentFilter(plan,this, entrepriseID, typeEntreprise,typeLot);

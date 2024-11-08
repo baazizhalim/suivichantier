@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FCF3CACA"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:background="@drawable/fichier_2_100">
 
     <!-- Ajoutez ici vos vues (TextView, EditText, Button, etc.) -->
     <TextView
@@ -12,12 +12,13 @@
         android:layout_width="116dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="sans-serif-black"
+        android:fontFamily="sans-serif-medium"
         android:padding="5dp"
         android:text="Marque"
         android:textAlignment="center"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,13 +32,16 @@
             android:padding="5dp"
             android:text="Désignation : "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/designation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp" />
+            android:backgroundTint="@color/white"
+            android:padding="5dp"
+            android:textColor="@color/white" />
     </LinearLayout>
 
     <LinearLayout
@@ -52,12 +56,14 @@
             android:padding="5dp"
             android:text="Observation : "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/observation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:padding="5dp" />
     </LinearLayout>
 
@@ -73,14 +79,17 @@
             android:padding="5dp"
             android:text="Priorité : "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <Spinner
             android:id="@+id/priorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:paddingHorizontal="5dp"
-            android:paddingVertical="5dp" />
+            android:paddingVertical="5dp"
+            android:textColor="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -90,14 +99,17 @@
             android:paddingVertical="5dp"
             android:text="Type : "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <Spinner
             android:id="@+id/type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:paddingHorizontal="5dp"
             android:paddingVertical="5dp"
+            android:textColor="@color/white"
             android:textSize="16dp" />
 
         <TextView
@@ -108,15 +120,18 @@
             android:paddingVertical="5dp"
             android:text="Date d'ajout : "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/dateAjout"
             android:layout_width="77dp"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:inputType="date"
             android:paddingHorizontal="5dp"
-            android:paddingVertical="5dp" />
+            android:paddingVertical="5dp"
+            android:textColor="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -126,15 +141,18 @@
             android:paddingVertical="5dp"
             android:text="Etat : "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <Spinner
             android:id="@+id/etat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:hint="Etat"
             android:paddingHorizontal="5dp"
-            android:paddingVertical="5dp" />
+            android:paddingVertical="5dp"
+            android:textColor="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -144,15 +162,18 @@
             android:paddingVertical="5dp"
             android:text="Lot : "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <Spinner
             android:id="@+id/lot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:hint="Etat"
             android:paddingHorizontal="5dp"
-            android:paddingVertical="5dp" />
+            android:paddingVertical="5dp"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 
@@ -169,19 +190,21 @@
             android:id="@+id/btnCapture"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:background="@color/material_dynamic_primary50"
+            android:background="@drawable/rounded_button_valider"
             android:onClick="openCamera"
             android:padding="5dp"
             android:layout_marginHorizontal="10dp"
-            android:text="Capture Photo" />
+            android:text="Capture Photo"
+            android:textColor="@color/white"/>
         <Button
             android:id="@+id/btnSynchroMark"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:background="@color/material_dynamic_primary50"
+            android:background="@drawable/rounded_button_valider"
             android:padding="5dp"
             android:layout_marginHorizontal="10dp"
-            android:text="Synchro Photos" />
+            android:text="Synchro Photos"
+            android:textColor="@color/white"/>
     </LinearLayout>
     <TableLayout
     android:layout_width="match_parent"
@@ -212,14 +235,18 @@
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:background="@android:color/holo_green_light"
-            android:text="Valider" />
+            android:text="Valider"
+            android:layout_marginRight="5dp"
+            android:textColor="@color/white"/>
 
         <Button
             android:id="@+id/bottom_delete_button"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:background="@color/design_default_color_error"
-            android:text="Effacer" />
+            android:text="Effacer"
+            android:layout_marginHorizontal="5dp"
+            android:textColor="@color/white"/>
 
         <Button
             android:id="@+id/bottom_cancel_button"
@@ -227,7 +254,9 @@
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:background="#7E7A7A"
-            android:text="Annuler" />
+            android:text="Annuler"
+            android:layout_marginHorizontal="5dp"
+            android:textColor="@color/white"/>
 
         <Button
             android:id="@+id/bottom_modifier_button"
@@ -235,6 +264,8 @@
             android:layout_width="115dp"
             android:layout_height="35dp"
             android:background="#BE7A1A"
-            android:text="Modifier Etat" />
+            android:text="Modifier Etat"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/white"/>
     </LinearLayout>
 </LinearLayout>

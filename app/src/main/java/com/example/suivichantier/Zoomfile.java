@@ -94,7 +94,7 @@ public class Zoomfile extends AppCompatActivity {
 
         layout = findViewById(R.id.layout);
         imageView1 = findViewById(R.id.image1);
-        bareFichier = findViewById(R.id.bareFichiers);
+        //bareFichier = findViewById(R.id.bareFichiers);
         //hauteur = getSupportActionBar().getHeight();
         //bareFichier.setPadding(0, getSupportActionBar().getHeight(), 0, 0);
         displayFile(fichier,type);

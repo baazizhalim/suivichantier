@@ -3,78 +3,65 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/fichier_2_100">
 
-
-
-    <TextView
-        android:id="@+id/bienvenue"
-        android:layout_width="420dp"
-        android:layout_height="60dp"
-        android:background="#0659D5"
-        android:gravity="center"
-        android:text="APPLICATION SUIVI CHANTIER"
-        android:textAlignment="center"
-        android:textColor="#63FE00"
-        android:textColorHint="#FEF000"
-        android:textSize="28sp"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.071" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/nom"
-        android:layout_width="400dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
-        android:background="#0659D5"
-        android:gravity="center"
-        android:text="TextView"
-        android:textAlignment="center"
-        android:textColor="#63FE00"
-        android:textColorHint="#FEF000"
-        android:textSize="26sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bienvenue" />
-    <Button
-        android:id="@+id/suivi"
-        style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
-        android:layout_width="220dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/rounded_button"
-        android:gravity="center"
-        android:text="SUIVI CHANTIER"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="#63FE00"
-        android:textColorHint="#FEF000"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nom" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/synchro"
-        style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
-        android:layout_width="220dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/rounded_button"
-        android:gravity="center"
-        android:text="SYNCHRONISER"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="#63FE00"
-        android:textColorHint="#FEF000"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/suivi" />
+            <TextView
+                android:id="@+id/nom"
+                android:layout_width="400dp"
+                android:layout_height="60dp"
+                android:background="#0659D5"
+                android:gravity="center"
+                android:text="TextView"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="26sp" />
 
+            <Button
+                android:id="@+id/suivi"
+                style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+                android:layout_width="220dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/rounded_button_valider"
+                android:gravity="center"
+                android:text="SUIVI CHANTIER"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textColorHint="#FEF000"
+                android:textSize="24sp"
+                 />
 
+            <Button
+                android:id="@+id/synchro"
+                style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+                android:layout_width="220dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/rounded_button_valider"
+                android:gravity="center"
+                android:text="SYNCHRONISER"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textColorHint="#FEF000"
+                android:textSize="24sp"
+                 />
+        </LinearLayout>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

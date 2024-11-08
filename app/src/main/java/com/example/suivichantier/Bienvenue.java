@@ -58,8 +58,8 @@ public class Bienvenue extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper());
 
         // Afficher le message dans un TextView
-        TextView textView = findViewById(R.id.nom);
-        textView.setText("BIENVENUE " + nomEntreprise+" "+typeEntreprise);
+        TextView nom = findViewById(R.id.nom);
+        nom.setText("BIENVENUE " + nomEntreprise+" ( "+typeEntreprise+" )");
 
         Button synchro = findViewById(R.id.synchro);
         Button suivi = findViewById(R.id.suivi);

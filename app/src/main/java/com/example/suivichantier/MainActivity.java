@@ -8,14 +8,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-public static String ip="192.168.1.3";
+public static String ip="192.168.1.5";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Button connectButton = findViewById(R.id.connect_button);
-        Button subscriptionButton = findViewById(R.id.subscription_button);
+        //Button subscriptionButton = findViewById(R.id.subscription_button);
 
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -24,11 +24,11 @@ public static String ip="192.168.1.3";
                 startActivity(intent);}
         });
 
-        subscriptionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Demander une souscription clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        subscriptionButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(MainActivity.this, "Demander une souscription clicked", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 }

@@ -58,8 +58,8 @@ public class Zoom1 extends AppCompatActivity {
 
     protected    FrameLayout layout;
 
-    protected   Mark mark ;
-    protected   MarkView markView ;
+    public  Mark mark ;
+    public  MarkView markView ;
     private Plan plan;
     private int pagex,pagey;
     private OkHttpClient client;

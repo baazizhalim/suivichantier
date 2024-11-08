@@ -68,6 +68,8 @@
          android:name=".AnnexeCom"/>
      <activity
          android:name=".AnnexePV"/>
+        <activity
+            android:name=".Statistiques"/>
 
  </application>
 

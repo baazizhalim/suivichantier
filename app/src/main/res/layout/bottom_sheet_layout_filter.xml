@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FCF3CACA"
+    android:background="@drawable/fichier_2_100"
     android:orientation="vertical"
-    android:gravity="center"
+    android:gravity="top"
     android:padding="5dp">
 
     <!-- Ajoutez ici vos vues (TextView, EditText, Button, etc.) -->
@@ -18,7 +18,9 @@
         android:text="FILTRE"
         android:textAlignment="center"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginVertical="30dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,16 +35,20 @@
             android:padding="5dp"
             android:text="Type Mark : "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <Spinner
             android:id="@+id/typeMark"
-            android:layout_width="120dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:paddingHorizontal="5dp"
-            android:paddingVertical="5dp" />
+            android:paddingVertical="5dp"
+            android:textColor="@color/white" />
 
         <TextView
+            android:id="@+id/typeLotLabel"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:gravity="right"
@@ -50,18 +56,37 @@
             android:paddingVertical="5dp"
             android:text="Type Lot "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <Spinner
             android:id="@+id/typeLot"
-            android:layout_width="120dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:paddingHorizontal="5dp"
-
             android:paddingVertical="5dp"
+            android:textColor="@color/white"
             android:textSize="16dp" />
 
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Etat "
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
+        <Spinner
+            android:id="@+id/etat"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="5dp"
+            android:textColor="@color/white" />
 
     </LinearLayout>
     <LinearLayout
@@ -70,21 +95,7 @@
         android:orientation="horizontal"
         android:gravity="center">
 
-        <TextView
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="Etat "
-            android:textSize="16sp"
-            android:textStyle="bold" />
 
-        <Spinner
-            android:id="@+id/etat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="5dp"
-            android:paddingVertical="5dp" />
 
         <TextView
             android:layout_width="120dp"
@@ -94,15 +105,18 @@
             android:paddingVertical="5dp"
             android:text="Date debut : "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/dateDebut"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="5dp"
+            android:backgroundTint="@color/white"
             android:inputType="date"
+            android:paddingHorizontal="5dp"
             android:paddingVertical="5dp"
+            android:textColor="@color/white"
             android:textSize="16dp" />
 
         <TextView
@@ -113,15 +127,19 @@
             android:paddingVertical="5dp"
             android:text="Date Fin "
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/dateFin"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:inputType="date"
             android:paddingHorizontal="5dp"
-            android:paddingVertical="5dp" />
+            android:paddingVertical="5dp"
+            android:textColor="@color/white"
+            android:textSize="16dp"  />
 
 
 
@@ -132,23 +150,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginVertical="20dp">
 
         <TextView
-            android:layout_width="120dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right"
             android:paddingHorizontal="5dp"
             android:paddingVertical="5dp"
             android:text="Marks Affichés "
             android:textSize="16sp"
-            android:textStyle="bold" />
-    <Spinner
-        android:id="@+id/listeMarks"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="5dp"
-        android:paddingVertical="5dp" />
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
+
+        <Spinner
+            android:id="@+id/listeMarks"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="5dp"
+            android:textColor="@color/white" />
 
 </LinearLayout>
     <LinearLayout
@@ -156,20 +179,22 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal">
-
-
         <Button
             android:id="@+id/ok_button"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:background="@android:color/holo_green_light"
-            android:text="Valider" />
+            android:layout_marginRight="30dp"
+            android:background="@drawable/rounded_button_valider"
+            android:text="Valider"
+            android:textColor="@color/white"/>
         <Button
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:background="@android:color/holo_orange_light"
-            android:text="Annuler" />
+            android:background="@drawable/rounded_button_annuler"
+            android:text="Annuler"
+            android:layout_marginLeft="30dp"
+            android:textColor="@color/white"/>
 
             </LinearLayout>
 </LinearLayout>

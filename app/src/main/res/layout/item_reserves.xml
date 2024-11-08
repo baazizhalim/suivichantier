@@ -13,7 +13,8 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="Item"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
     <TextView
         android:id="@+id/item_text2"
         android:layout_width="0dp"
@@ -21,7 +22,8 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="Item"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
     <TextView
         android:id="@+id/item_text6"
         android:layout_width="0dp"
@@ -29,7 +31,8 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="Item"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
     <TextView
         android:id="@+id/item_text3"
         android:layout_width="0dp"
@@ -37,7 +40,8 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="Item"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
     <TextView
         android:id="@+id/item_text4"
         android:layout_width="0dp"
@@ -45,7 +49,8 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="Item"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
     <TextView
         android:id="@+id/item_text5"
         android:layout_width="0dp"
@@ -53,5 +58,6 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="Item"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
 </LinearLayout>

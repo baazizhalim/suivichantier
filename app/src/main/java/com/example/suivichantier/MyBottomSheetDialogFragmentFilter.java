@@ -1,67 +1,32 @@
 package com.example.suivichantier;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Matrix;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment {
     protected Plan plan;
@@ -73,6 +38,7 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
     protected String typeLot;
     protected AppDatabase mDatabase;
     protected   List<Mark> marksAffiches = new ArrayList<>();
+    protected   List<Mark> marksorigines = new ArrayList<>();
     Spinner etat;
     Spinner typeMark;
     Spinner type_Lot;
@@ -82,11 +48,7 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
     Zoom z;
     Button buttonCancel;
     Button buttonOK;
-
-    int statut = 0;
-
-    private OkHttpClient client;
-
+    TextView typeLotLabel;
 
 
     public MyBottomSheetDialogFragmentFilter(Plan  plan,  Zoom z, int entrepriseID, String typeEntreprise, String typelot) {
@@ -103,8 +65,7 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fenetre = inflater.inflate(R.layout.bottom_sheet_layout_filter, container, false);
-        mDatabase = Room.databaseBuilder(getContext(), AppDatabase.class, "my-database").fallbackToDestructiveMigration().allowMainThreadQueries().build();
-        client = new OkHttpClient();
+        mDatabase = Room.databaseBuilder(requireActivity(), AppDatabase.class, "my-database").fallbackToDestructiveMigration().allowMainThreadQueries().build();
 
         typeMark = fenetre.findViewById(R.id.typeMark);
         type_Lot = fenetre.findViewById(R.id.typeLot);
@@ -114,6 +75,7 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
         dateFin=fenetre.findViewById(R.id.dateFin);
         buttonOK= fenetre.findViewById(R.id.ok_button);
         buttonCancel= fenetre.findViewById(R.id.cancel_button);
+        typeLotLabel=fenetre.findViewById(R.id.typeLotLabel);
 
 
 
@@ -121,10 +83,10 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
 
 
         List<String> choices = new ArrayList<>();
-        choices.add("Tout type");
-        choices.add("Reserve");
-        choices.add("Tache");
-        choices.add("Note");
+        choices.add("Tout");
+        choices.add("reserve");
+        choices.add("tache");
+        choices.add("note");
 
 // Créer un ArrayAdapter pour le Spinner
         ArrayAdapter<String> adapterFilterMark = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, choices);
@@ -133,17 +95,20 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
 
 
         List<String> typeLots = new ArrayList<>();
-        typeLots.add("S/O");
-        typeLots.add("Maçonnerie");
-        typeLots.add("Ménuiserie");
-        typeLots.add("Plomberie");
-        typeLots.add("enduit");
-        typeLots.add("revetement");
-        typeLots.add("electricite");
-        typeLots.add("Equipements");
-        typeLots.add("Peinture");
-        typeLots.add("Etancheite");
-        typeLots.add("Autres");
+        if(typeLot.equals("CES")) {
+            typeLots.add("Tout");
+            typeLots.add("Maçonnerie");
+            typeLots.add("Ménuiserie");
+            typeLots.add("Plomberie");
+            typeLots.add("enduit");
+            typeLots.add("revetement");
+            typeLots.add("electricite");
+            typeLots.add("Equipements");
+            typeLots.add("Peinture");
+            typeLots.add("Etancheite");
+            typeLots.add("Autres");
+        }
+        else typeLots.add(typeLot);
 
         ArrayAdapter<String> adapterTypeLot = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, typeLots);
         adapterTypeLot.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -151,6 +116,7 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
 
 
         List<String> etatsListe = new ArrayList<>();
+        etatsListe.add("Tout");
         etatsListe.add("SNT");
         etatsListe.add("TNV");
         etatsListe.add("TV");
@@ -159,22 +125,21 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
         ArrayAdapter<String> adapterEtat = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, etatsListe);
         adapterEtat.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         etat.setAdapter(adapterEtat);
-        typeMark.setSelection(0);
-        type_Lot.setVisibility(View.INVISIBLE);
-        if(typeLot.equals("CES")){
-            type_Lot.setVisibility(View.VISIBLE);
-            type_Lot.setSelection(0);
-            marksAffiches = z.getAllMarks(plan);
-            ArrayAdapter<Mark> adapterMark = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, marksAffiches);
-            adapterMark.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            listeMarks.setAdapter(adapterMark);
-            listeMarks.setVisibility(View.VISIBLE);
 
-        }
+        marksorigines.addAll(z.getAllMarks(plan));
+        marksAffiches.addAll(marksorigines);
+        ArrayAdapter<Mark> adapterMark = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, marksAffiches);
+        adapterMark.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        listeMarks.setAdapter(adapterMark);
+        listeMarks.setVisibility(View.VISIBLE);
+
         typeMark.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                                @Override
                                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                                   marksAffiches = getListeMarks();
+                                                   marksAffiches.clear();
+                                                   marksAffiches.addAll(getListeMarks());
+
+
                                                }
 
                                                @Override
@@ -186,7 +151,8 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
         type_Lot.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                                @Override
                                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                                   marksAffiches = getListeMarks();
+                                                   marksAffiches.clear();
+                                                   marksAffiches.addAll(getListeMarks());
                                                }
 
                                                @Override
@@ -199,7 +165,8 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
         etat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                                @Override
                                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                                   marksAffiches = getListeMarks();
+                                                   marksAffiches.clear();
+                                                   marksAffiches.addAll(getListeMarks());
                                                }
 
                                                @Override
@@ -222,7 +189,8 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
 
             @Override
             public void afterTextChanged(Editable s) {
-                marksAffiches = getListeMarks();
+                marksAffiches.clear();
+                marksAffiches.addAll(getListeMarks());
             }
         });
 
@@ -239,12 +207,14 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
 
             @Override
             public void afterTextChanged(Editable s) {
-                marksAffiches = getListeMarks();
+                marksAffiches.clear();
+                marksAffiches.addAll(getListeMarks());
             }
         });
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                marksAffiches.addAll(marksorigines);
                 dismiss(); // Ferme le bottom sheet
             }
         });
@@ -276,27 +246,69 @@ public class MyBottomSheetDialogFragmentFilter extends BottomSheetDialogFragment
 
     }
 
+    public void onStart() {
+        super.onStart();
+
+        BottomSheetDialog dialog = (BottomSheetDialog) getDialog();
+        dialog.setCanceledOnTouchOutside(false);
+
+        View bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+
+
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        // Pour définir la hauteur maximale
+        ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
+        layoutParams.height = getScreenHeight(); // Par exemple, définir à 75% de la hauteur de l'écran
+        bottomSheet.setLayoutParams(layoutParams);
+
+    }
+
     private int getScreenHeight() {
         return getResources().getDisplayMetrics().heightPixels;
     }
 
     public List<Mark> getListeMarks() {
-        List<Mark> marks=new ArrayList<>();
+
         String[] valeurs = new String[6];
             valeurs[0] = typeMark.getSelectedItem().toString();
             valeurs[1] = type_Lot.getSelectedItem().toString();
             valeurs[2] = etat.getSelectedItem().toString();
-            valeurs[3] = dateDebut.getText().toString();
-            valeurs[4] = dateFin.getText().toString();
+            valeurs[3] = dateDebut.getText().toString();if(valeurs[3].isEmpty())valeurs[3]="0000-00-00";
+            valeurs[4] = dateFin.getText().toString();if(valeurs[4].isEmpty())valeurs[4]="5000-00-00";
             valeurs[5] = String.valueOf(plan.getPlanID());
-            marks=calculer(valeurs);
-            return marks;
+        return calculer(valeurs[0],valeurs[1],valeurs[2],valeurs[3],valeurs[4],valeurs[5]);
+
     }
 
-    private List<Mark> calculer(String[] valeurs) {
-        List<Mark> marks;
-        marks = mDatabase.markDao().getMarkscriteres(valeurs[0],valeurs[1],valeurs[2],valeurs[3],valeurs[4],valeurs[5]);
-        return marks;
+    private List<Mark> calculer(String typeMark,String typeLot,String etat,String dateDebut,String dateFin,String planID) {
+
+        if(typeMark.equals("Tout") && etat.equals("Tout") && !typeLot.equals("Tout"))
+            return mDatabase.markDao().getMarkscriteres1(  typeLot,  dateDebut,  dateFin,  planID);
+
+        else if(typeMark.equals("Tout") && !etat.equals("Tout")&& !typeLot.equals("Tout"))
+            return mDatabase.markDao().getMarkscriteres2( etat, typeLot,   dateDebut,  dateFin,  planID);
+
+        else if(!typeMark.equals("Tout") && etat.equals("Tout") && !typeLot.equals("Tout"))
+            return mDatabase.markDao().getMarkscriteres3( typeMark,  typeLot,   dateDebut,  dateFin,  planID);
+
+        else if(!typeMark.equals("Tout") && !etat.equals("Tout") && !typeLot.equals("Tout"))
+            return mDatabase.markDao().getMarkscriteres4( typeMark,   etat, typeLot, dateDebut,  dateFin,  planID);
+
+        else if(typeMark.equals("Tout") && etat.equals("Tout") && typeLot.equals("Tout"))
+            return mDatabase.markDao().getMarkscriteres5(  dateDebut,  dateFin,  planID);
+
+        if(!typeMark.equals("Tout") && etat.equals("Tout") && typeLot.equals("Tout"))
+            return mDatabase.markDao().getMarkscriteres6(  typeMark,  dateDebut,  dateFin,  planID);
+
+        else if(typeMark.equals("Tout") && !etat.equals("Tout")&& typeLot.equals("Tout"))
+            return mDatabase.markDao().getMarkscriteres7( etat,  dateDebut,  dateFin,  planID);
+
+        else if(!typeMark.equals("Tout") && !etat.equals("Tout") && typeLot.equals("Tout"))
+            return mDatabase.markDao().getMarkscriteres8( typeMark,  etat,   dateDebut,  dateFin,  planID);
+
+        return null;
     }
 
 

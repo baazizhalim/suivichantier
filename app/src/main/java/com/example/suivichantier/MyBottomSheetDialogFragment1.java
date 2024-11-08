@@ -82,6 +82,7 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
     Button buttonDelete;
     Button buttonOK;
     Button buttonModifier;
+    Button btnCapture;
     Button buttonSynchroMark;
     int statut = 0;
     //boolean nouveauMark = false;
@@ -119,19 +120,7 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
         rows[0] = fenetre.findViewById(R.id.row1);
         rows[1] = fenetre.findViewById(R.id.row2);
 
-        Button btnCapture = fenetre.findViewById(R.id.btnCapture);
-        btnCapture.setEnabled(false);
-        btnCapture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
-                } else {
-                    openCamera();
-                }
-            }
-        });
+
 
 
         // Initialisez vos vues ici
@@ -166,7 +155,7 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
         type.setAdapter(adapter2);
 
         List<String> lots = new ArrayList<>();
-        lots.add("S/O");
+        //lots.add("S/O");
         lots.add("Maçonnerie");
         lots.add("Ménuiserie");
         lots.add("Plomberie");
@@ -200,9 +189,13 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
         if (typeEntreprise.equals("ER")) buttonDelete.setEnabled(false);
         buttonCancel = fenetre.findViewById(R.id.bottom_cancel_button);
         buttonSynchroMark = fenetre.findViewById(R.id.btnSynchroMark);
+        btnCapture = fenetre.findViewById(R.id.btnCapture);
+        btnCapture.setEnabled(false);
+
+
 
         if (mark != null) {
-            if (!typeEntreprise.equals("ER")) btnCapture.setEnabled(true);
+            if ( !typeEntreprise.equals("ER") && getNumeroPhotoDisponible(mark.getMarkID())!=0 ) btnCapture.setEnabled(true);
             designation.setText(mark.getDesignation());
             observation.setText(mark.getObservation());
             etat.setSelection(options1.indexOf(mark.getStatut()));
@@ -264,13 +257,14 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
             public void onClick(View v) {
 
                 z.layout.removeView(view);
-                //z.marks.remove(mark);
-                //z.markViews.remove(markView);
+                z.mark=null;
+                z.markView=null;
                 mDatabase.markDao().delete(mark);
                 valeurs = null;
                 dismiss(); // Ferme le bottom sheet
             }
         });
+
         buttonSynchroMark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -281,6 +275,17 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
             }
         });
 
+        btnCapture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                } else {
+                    openCamera();
+                }
+            }
+        });
 
         return fenetre;
     }
@@ -291,25 +296,20 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
         List<Photo> photos = mDatabase.photoDao().getAllPhotosMark(markID);
         Button[] photoButtons = new Button[2];
         Button[] photoDeletes = new Button[2];
-        //Button[] photoSynchs = new Button[2];
-        i = 0;
-        for (Photo photo : photos) {
 
-            photoButtons[i] = new Button(getContext());
-            photoButtons[i].setText(photo.getFile());
-            photoButtons[i].setContentDescription(String.valueOf(photo.getPhotoID()));
-            rows[i].addView(photoButtons[i]);
-            photoDeletes[i] = new Button(getContext());
-            photoDeletes[i].setText("Delete");
-            photoDeletes[i].setContentDescription(String.valueOf(photo.getPhotoID()));
-            if (typeEntreprise.equals("ER")) photoDeletes[i].setEnabled(false);
-            rows[i].addView(photoDeletes[i]);
-            //photoSynchs[i] = new Button(getContext());
-            //photoSynchs[i].setText("Synchro");
-            //photoSynchs[i].setContentDescription(String.valueOf(photo.getPhotoID()));
-            //rows[i].addView(photoSynchs[i]);
-
-            photoButtons[i].setOnClickListener(new View.OnClickListener() {
+        final int[] i = {0};
+        photos.forEach( (Photo photo) ->{
+            int index = i[0];
+            photoButtons[index] = new Button(getContext());
+            photoButtons[index].setText(photo.getFile());
+            photoButtons[index].setContentDescription(String.valueOf(photo.getPhotoID()));
+            rows[index].addView(photoButtons[index]);
+            photoDeletes[index] = new Button(getContext());
+            photoDeletes[index].setText("Delete");
+            photoDeletes[index].setContentDescription(String.valueOf(photo.getPhotoID()));
+            if (typeEntreprise.equals("ER")) photoDeletes[index].setEnabled(false);
+            rows[index].addView(photoDeletes[index]);
+            photoButtons[index].setOnClickListener(new View.OnClickListener() {
                 float scaleFactor = 1.0f;
                 Matrix matrix = new Matrix();
 
@@ -317,12 +317,13 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
                 public void onClick(View v) {
 
                     File appDir = getContext().getExternalFilesDir(null); // Répertoire principal de l'application
-                    File myDir = new File(appDir, "/photos"); // Sous-répertoire
+                    File myDir = new File(appDir, "/photos/"+ mark.getMarkID() ); // Sous-répertoire
                     if (!myDir.exists()) {
                         myDir.mkdirs();
                     }
                     //Photo photo = mDatabase.photoDao().getOnePhoto(Integer.parseInt(v.getContentDescription().toString()));
                     String imagePath = myDir + "/" + photo.getFile();
+
                     // Charger l'image à partir du fichier JPEG
                     Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath);
 
@@ -404,26 +405,16 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
                     dialog.show();
                 }
             });
-            photoDeletes[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteLocalFile(photo.getFile());
+            photoDeletes[index].setOnClickListener(v -> {
+                deleteLocalFile(photo.getFile());
+                rows[index].removeAllViews();
+                btnCapture.setEnabled(true);
 
 
-                }
+
             });
-//            photoSynchs[i].setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//
-//
-//
-//                }
-//            });
-
-            i++;
-            if (i == 2) break;
-        }
+            i[0]++;
+        });
 
 
     }
@@ -679,7 +670,7 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
 
     public int getNumeroPhotoDisponible(String markID) {
         int num = 0;
-        List<Photo> photos = new ArrayList<>();
+        List<Photo> photos ;
         photos = mDatabase.photoDao().getAllPhotosMark(markID);
         if (photos.size() == 0) num = 1;
         else if (photos.size() == 2) num = 0;
@@ -690,6 +681,7 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
             String xString = parts[parts.length - 1];
             // Convertir cette valeur en entier
             num = Integer.parseInt(xString);
+            num = num % 2+1;
         }
 
         return num;
@@ -698,11 +690,13 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
     private void saveImage(Bitmap bitmap) {
         int currentdate = (int) new Date().getTime();
         int i = getNumeroPhotoDisponible(mark.getMarkID());
-        String fileName = "photo_" + mark.getMarkID() + "_" + i + ".jpg";
-        String photoiD = mark.getMarkID() + "_" + i;
-        saveImageAsJPEG(bitmap, fileName);
-        Photo photo = new Photo(photoiD, fileName, String.valueOf(currentdate), mark.getMarkID(), entrepriseID);
-        mDatabase.photoDao().insert(photo);
+        if(i!=0) {
+            String fileName = "photo_" + mark.getMarkID() + "_" + i + ".jpg";
+            String photoiD = mark.getMarkID() + "_" + i;
+            saveImageAsJPEG(bitmap, fileName);
+            Photo photo = new Photo(photoiD, fileName, String.valueOf(currentdate), mark.getMarkID(), entrepriseID);
+            mDatabase.photoDao().insert(photo);
+        }
         dismiss();  // Ferme le BottomSheetDialogFragment après la sauvegarde
     }
 
@@ -759,8 +753,6 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
         dialog.setCanceledOnTouchOutside(false);
 
         View bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-
-
         BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
@@ -807,11 +799,11 @@ public class MyBottomSheetDialogFragment1 extends BottomSheetDialogFragment {
             valeurs[0] = designation.getText().toString();
             valeurs[1] = observation.getText().toString();
             valeurs[2] = etat.getSelectedItem().toString();
-            ;
             valeurs[3] = type.getSelectedItem().toString();
             valeurs[4] = dateAjout.getText().toString();
             valeurs[5] = priorite.getSelectedItem().toString();
             valeurs[6] = lot.getSelectedItem().toString();
+            if(valeurs[6].equals("S/O")) valeurs[6] = typeLot;
         }
         return valeurs;
     }
