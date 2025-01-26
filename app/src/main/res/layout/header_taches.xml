@@ -3,10 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp"
+    android:padding="4dp"
     android:layout_gravity="clip_horizontal"
     android:background="#DDDDDD">
-
+    <TextView
+        android:id="@+id/header_title0"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="N°"
+        android:textSize="15sp"
+        android:textStyle="bold" />
     <TextView
         android:id="@+id/header_title1"
         android:layout_width="0dp"
@@ -14,7 +22,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="Désignation"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
     <TextView
         android:id="@+id/header_title2"
@@ -23,7 +31,7 @@
         android:text="Lot"
         android:layout_weight="1"
         android:gravity="center"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
     <TextView
         android:id="@+id/header_title6"
@@ -32,7 +40,7 @@
         android:text="Plan"
         android:layout_weight="1"
         android:gravity="center"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
     <TextView
         android:id="@+id/header_title3"
@@ -41,7 +49,7 @@
         android:text="Date"
         android:layout_weight="1"
         android:gravity="center"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
     <TextView
         android:id="@+id/header_title4"
@@ -50,7 +58,7 @@
         android:text="Observation"
         android:layout_weight="1"
         android:gravity="center"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
     <TextView
         android:id="@+id/header_title5"
@@ -59,6 +67,6 @@
         android:text="Etat"
         android:layout_weight="1"
         android:gravity="center"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
 </LinearLayout>

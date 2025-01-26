@@ -6,21 +6,13 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index("chantierID"),@Index("entrepriseSuiviID"),@Index("entrepriseRealisationID")},
+@Entity(indices = {@Index("chantierID")},
         foreignKeys = {
         @ForeignKey(entity = Chantier.class,
                 parentColumns = "chantierID",
                 childColumns = "chantierID",
                 onDelete = ForeignKey.CASCADE),
-        @ForeignKey(entity = Entreprise.class,
-                parentColumns = "entrepriseID",
-                childColumns = "entrepriseSuiviID",
-                onDelete = ForeignKey.CASCADE),
-        @ForeignKey(entity = Entreprise.class,
-                parentColumns = "entrepriseID",
-                childColumns = "entrepriseRealisationID",
-                onDelete = ForeignKey.CASCADE)
-})
+       })
 public class Lot {
     @PrimaryKey
     private int lotID;

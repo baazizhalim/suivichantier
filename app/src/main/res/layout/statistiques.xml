@@ -11,21 +11,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="2dp"
+        android:visibility="visible">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right"
             android:padding="2dp"
             android:text="Type : "
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/typeMark"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:padding="2dp" />
+            android:padding="2dp"
+            android:textSize="14sp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,35 +35,53 @@
             android:gravity="right"
             android:padding="2dp"
             android:text="Etat : "
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/statut"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:textSize="14sp"/>
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="2dp" />
+            android:gravity="right"
+            android:padding="2dp"
+            android:text="Lot : "
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/lot"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:textSize="14sp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right"
             android:padding="2dp"
             android:text="Date Début : "
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
         <EditText
             android:id="@+id/dateDebut"
-                android:layout_width="100dp"
+            android:layout_width="100dp"
             android:inputType="date"
             android:layout_height="wrap_content"
-            android:padding="2dp" />
+            android:padding="2dp"
+            android:textSize="14sp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right"
             android:padding="2dp"
             android:text="Date Fin : "
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <EditText
@@ -69,19 +89,25 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:inputType="date"
-            android:padding="2dp" />
-
-        <Button
-            android:id="@+id/valider"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_button_valider"
             android:padding="2dp"
-            android:text="Valider " />
+            android:textSize="14sp"/>
 
     </LinearLayout>
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChart"
+            android:layout_width="240dp"
+            android:layout_height="match_parent" />
+
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barChart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    </LinearLayout>
 </LinearLayout>

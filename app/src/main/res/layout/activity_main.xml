@@ -4,22 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/fichier_2_100"
+    android:background="@drawable/affichage_1_200"
     android:padding="16dp">
-
-    <TextView
-        android:layout_width="179dp"
-        android:layout_height="34dp"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/neuropolitical_rg"
-        android:gravity="center"
-        android:text="Taraqob"
-        android:textColor="@android:color/holo_orange_light"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:layout_width="match_parent"

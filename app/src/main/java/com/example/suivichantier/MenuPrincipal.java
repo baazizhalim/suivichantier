@@ -1,14 +1,23 @@
 package com.example.suivichantier;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Matrix;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.room.Room;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MenuPrincipal extends AppCompatActivity {
 
@@ -16,7 +25,7 @@ public class MenuPrincipal extends AppCompatActivity {
     private int entrepriseID ;
     private String nomEntreprise ;
     private String typeEntreprise ;
-    private String nomChantier ;
+    private String nomChantier,nomClient ;
     private int chantierID ;
 
     protected int lotID ;
@@ -34,10 +43,10 @@ public class MenuPrincipal extends AppCompatActivity {
              nomChantier = intent.getStringExtra("nomChantier");
              chantierID = intent.getIntExtra("chantierID",0);
              mDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "my-database").fallbackToDestructiveMigration().allowMainThreadQueries().build();
-
+             nomClient = getNomClient(chantierID);
 
             List<Lot> listeLots;
-            if(typeEntreprise.equals("client")) listeLots =mDatabase.lotDao().getAllLotChantier(chantierID);
+            if(Objects.equals(typeEntreprise, "client")) listeLots =mDatabase.lotDao().getAllLotChantier(chantierID);
             else if(typeEntreprise.equals("ES")) listeLots =mDatabase.lotDao().getAllLotChantierES(entrepriseID,chantierID);
             else listeLots =mDatabase.lotDao().getAllLotChantierER(entrepriseID,chantierID);
 
@@ -56,6 +65,7 @@ public class MenuPrincipal extends AppCompatActivity {
             Button tachesButton = findViewById(R.id.taches_button);
             Button notesButton = findViewById(R.id.notes_button);
             Button stat = findViewById(R.id.stat);
+            //Button deconnecter = findViewById(R.id.deconnecter);
 
             listeLots.forEach(lot->{
                 switch(lot.getDescription()) {
@@ -88,6 +98,7 @@ public class MenuPrincipal extends AppCompatActivity {
             intent.putExtra("nomEntreprise", nomEntreprise);
             intent.putExtra("entrepriseID", entrepriseID);
             intent.putExtra("typeEntreprise", typeEntreprise);
+            intent.putExtra("nomClient", nomClient);
             intent.putExtra("nomChantier", nomChantier);
             intent.putExtra("chantierID", chantierID);
 
@@ -103,6 +114,21 @@ public class MenuPrincipal extends AppCompatActivity {
                 }
 
             });
+
+
+//            deconnecter.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sharedPreferences.edit();
+//                    editor.clear();
+//                    editor.apply();
+//                    Intent intent = new Intent(MenuPrincipal.this, Login.class);
+//                    startActivity(intent);
+//                    finish();
+//                }
+//
+//            });
 
 
 
@@ -152,6 +178,7 @@ public class MenuPrincipal extends AppCompatActivity {
                     intent1.putExtra("entrepriseID", entrepriseID);
                     intent1.putExtra("typeEntreprise", typeEntreprise);
                     intent1.putExtra("nomChantier", nomChantier);
+                    intent1.putExtra("nomClient", nomClient);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }
@@ -166,6 +193,7 @@ public class MenuPrincipal extends AppCompatActivity {
                     intent1.putExtra("entrepriseID", entrepriseID);
                     intent1.putExtra("typeEntreprise", typeEntreprise);
                     intent1.putExtra("nomChantier", nomChantier);
+                    intent1.putExtra("nomClient", nomClient);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }
@@ -180,6 +208,7 @@ public class MenuPrincipal extends AppCompatActivity {
                     intent1.putExtra("entrepriseID", entrepriseID);
                     intent1.putExtra("typeEntreprise", typeEntreprise);
                     intent1.putExtra("nomChantier", nomChantier);
+                    intent1.putExtra("nomClient", nomClient);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }
@@ -194,6 +223,7 @@ public class MenuPrincipal extends AppCompatActivity {
                     intent1.putExtra("entrepriseID", entrepriseID);
                     intent1.putExtra("typeEntreprise", typeEntreprise);
                     intent1.putExtra("nomChantier", nomChantier);
+                    intent1.putExtra("nomClient", nomClient);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }
@@ -204,6 +234,11 @@ public class MenuPrincipal extends AppCompatActivity {
                 public void onClick(View v) {
 
                     Intent intent1 = new Intent(MenuPrincipal.this, AnnexePV.class);
+                    intent1.putExtra("nomEntreprise", nomEntreprise);
+                    intent1.putExtra("entrepriseID", entrepriseID);
+                    intent1.putExtra("typeEntreprise", typeEntreprise);
+                    intent1.putExtra("nomChantier", nomChantier);
+                    intent1.putExtra("nomClient", nomClient);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }
@@ -214,6 +249,11 @@ public class MenuPrincipal extends AppCompatActivity {
                 public void onClick(View v) {
 
                     Intent intent1 = new Intent(MenuPrincipal.this, AnnexeCom.class);
+                    intent1.putExtra("nomEntreprise", nomEntreprise);
+                    intent1.putExtra("entrepriseID", entrepriseID);
+                    intent1.putExtra("typeEntreprise", typeEntreprise);
+                    intent1.putExtra("nomChantier", nomChantier);
+                    intent1.putExtra("nomClient", nomClient);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }
@@ -223,12 +263,23 @@ public class MenuPrincipal extends AppCompatActivity {
                 public void onClick(View v) {
 
                     Intent intent1 = new Intent(MenuPrincipal.this, AnnexePlanExecution.class);
+                    intent1.putExtra("nomEntreprise", nomEntreprise);
+                    intent1.putExtra("entrepriseID", entrepriseID);
+                    intent1.putExtra("typeEntreprise", typeEntreprise);
+                    intent1.putExtra("nomChantier", nomChantier);
+                    intent1.putExtra("nomClient", nomClient);
                     intent1.putExtra("chantierID", chantierID);
                     startActivity(intent1);
                 }
             });
 
         }
+
+    private String getNomClient(int chantierID) {
+        return mDatabase.entrepriseDao().getNameByChantierID(chantierID);
+
+    }
+
     private int getLotID(String typeLot){
 
         List<Lot> lot=null;
@@ -241,7 +292,44 @@ public class MenuPrincipal extends AppCompatActivity {
         if (!lot.isEmpty())return lot.get(0).getLotID();
         else return 0;
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        Intent intent = new Intent(this, ListeChantier.class);
+        intent.putExtra("nomEntreprise", nomEntreprise);
+        intent.putExtra("entrepriseID", entrepriseID);
+        intent.putExtra("typeEntreprise", typeEntreprise);
+        startActivity(intent);
+        finish();
 
- }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu_2, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.deconnecter) {
+
+                SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+                Intent intent = new Intent(MenuPrincipal.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+}
 
 

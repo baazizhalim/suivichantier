@@ -6,16 +6,12 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index("markID"),@Index("entrepriseID")}, foreignKeys = {
+@Entity(indices = {@Index("markID")}, foreignKeys = {
         @ForeignKey(entity = Mark.class,
                 parentColumns = "markID",
                 childColumns = "markID",
                 onDelete = ForeignKey.CASCADE),
-        @ForeignKey(entity = Entreprise.class,
-                parentColumns = "entrepriseID",
-                childColumns = "entrepriseID",
-                onDelete = ForeignKey.CASCADE)
-})
+       })
 public class Remarque {
 
     @PrimaryKey

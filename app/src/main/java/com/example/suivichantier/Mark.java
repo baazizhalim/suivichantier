@@ -8,10 +8,15 @@ import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
-@Entity(indices = {@Index("planID")},foreignKeys = {
+@Entity(indices = {@Index("planID"),@Index("entrepriseID")},
+        foreignKeys = {
         @ForeignKey(entity = Plan.class,
                 parentColumns = "planID",
                 childColumns = "planID",
+                onDelete = ForeignKey.CASCADE),
+        @ForeignKey(entity = Entreprise.class,
+                parentColumns = "entrepriseID",
+                childColumns =  "entrepriseID",
                 onDelete = ForeignKey.CASCADE)
 })
 
@@ -29,12 +34,11 @@ public class Mark {
     private String priorite;
     private String date;
     private int planID; // Clé étrangère vers le plan associé
-
-    //private boolean synchro;
-    // Constructeurs, getters et setters
+    private int entrepriseID;
 
 
-    public Mark(@NonNull String markID, String designation, String type, String lot, int posx, int posy, String observation, String statut, String priorite, String date, int planID) {
+
+    public Mark(@NonNull String markID, String designation, String type, String lot, int posx, int posy, String observation, String statut, String priorite, String date, int planID, int entrepriseID) {
         this.markID=markID;
         this.designation=designation;
         this.type = type;
@@ -46,7 +50,8 @@ public class Mark {
         this.priorite = priorite;
         this.date = date;
         this.planID = planID;
-        //this.synchro=false;
+        this.entrepriseID = entrepriseID;
+
     }
 
     public String getMarkID() {
@@ -139,23 +144,23 @@ public class Mark {
 
     @Override
     public String toString() {
-        return markID; // Cette méthode détermine ce qui est affiché dans le Spinner
+        return designation; // Cette méthode détermine ce qui est affiché dans le Spinner
     }
 
-//    public boolean isSynchro() {
-//        return synchro;
-//    }
+    public int getEntrepriseID() {
+        return entrepriseID;
+    }
 
-//    public void setSynchro(boolean synchro) {
-//        this.synchro = synchro;
-//    }
+    public void setEntrepriseID(int entrepriseID) {
+        this.entrepriseID = entrepriseID;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Mark mark = (Mark) o;
-        return posx == mark.posx && posy == mark.posy && planID == mark.planID  && Objects.equals(markID, mark.markID) && Objects.equals(designation, mark.designation) && Objects.equals(type, mark.type) && Objects.equals(lot, mark.lot) && Objects.equals(observation, mark.observation) && Objects.equals(statut, mark.statut) && Objects.equals(priorite, mark.priorite) && Objects.equals(date, mark.date);
+        return markID.equals(mark.markID);
     }
 
     @Override

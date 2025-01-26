@@ -1,0 +1,20 @@
+<!--<menu xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--    <item-->
+<!--        android:id="@+id/action_settings"-->
+<!--        android:title="Settings"-->
+<!--        android:orderInCategory="100"-->
+<!--        app:showAsAction="never" />-->
+<!--</menu>-->
+
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/deconnecter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@android:drawable/ic_lock_power_off"
+        android:title="Déconnexion"
+        app:showAsAction="always"/>
+</menu>

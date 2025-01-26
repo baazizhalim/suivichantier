@@ -1,6 +1,7 @@
 package com.example.suivichantier;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -18,4 +19,8 @@ public interface PvDao {
 
     @Query("SELECT * FROM pv where chantierID=:chantierID")
     List<Pv> getAllPvs(int chantierID);
+
+    @Query("delete FROM pv")
+    void deleteAll();
+
 }

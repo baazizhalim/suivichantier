@@ -1,17 +1,26 @@
 package com.example.suivichantier;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.room.Room;
 
 import com.google.gson.Gson;
@@ -23,8 +32,10 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +54,9 @@ public class Bienvenue extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private ExecutorService executorService;
     private Handler handler;
+    private int entrepriseID ;
+    private String nomEntreprise ;
+    private String typeEntreprise;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +64,9 @@ public class Bienvenue extends AppCompatActivity {
         mDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "my-database").fallbackToDestructiveMigration().allowMainThreadQueries().build();
         okHttpClient = new OkHttpClient();
         Intent intent = getIntent();
-        int entrepriseID = intent.getIntExtra("entrepriseID",0);
-        String nomEntreprise = intent.getStringExtra("nomEntreprise");
-        String typeEntreprise = intent.getStringExtra("typeEntreprise");
+        entrepriseID = intent.getIntExtra("entrepriseID",0);
+        nomEntreprise = intent.getStringExtra("nomEntreprise");
+        typeEntreprise = intent.getStringExtra("typeEntreprise");
 
         executorService = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
@@ -61,23 +75,19 @@ public class Bienvenue extends AppCompatActivity {
         TextView nom = findViewById(R.id.nom);
         nom.setText("BIENVENUE " + nomEntreprise+" ( "+typeEntreprise+" )");
 
-        Button synchro = findViewById(R.id.synchro);
+        //Button synchro = findViewById(R.id.action_synch);
         Button suivi = findViewById(R.id.suivi);
 
-        synchro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                showProgressDialog();
-                executorService.execute(this::recupereDateBase);
-
-            }
-
-            private void recupereDateBase() {
-                Bienvenue.this.recupereDateBase(entrepriseID, typeEntreprise);
-
-            }
-        });
+//        synchro.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                synchronisation();
+//
+//            }
+//
+//
+//        });
 
         suivi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +100,33 @@ public class Bienvenue extends AppCompatActivity {
 
             }
         });
+
+    }
+
+
+
+    private void effacerDateBase(int entrepriseID) {
+        List<Chantier> chantiers=new ArrayList<>();
+       switch (typeEntreprise){
+           case "client" : chantiers.addAll(mDatabase.chantierDao().getAllChantiersByPrioritaireID(entrepriseID));break;
+           case "ES" : chantiers.addAll(mDatabase.chantierDao().getAllChantiersByESID(entrepriseID));break;
+           case "ER" : chantiers.addAll(mDatabase.chantierDao().getAllChantiersByERID(entrepriseID));break;
+       }
+        chantiers.forEach(chantier ->{
+            mDatabase.chantierDao().delete(chantier);
+            supprimerRepertoire(nomEntreprise,chantier);
+        });
+
+    }
+
+    private void supprimerRepertoire(String nomClient, Chantier chantier) {
+        File dir = new File(getFilesDir(), nomClient+"/"+chantier.getNom());
+        boolean success = FileUtils.deleteDirectory(dir);
+        if (success) {
+            Log.d("FileUtils", "Répertoire supprimé avec succès");
+        } else {
+            Log.d("FileUtils", "Échec de la suppression du répertoire");
+        }
 
     }
 
@@ -224,6 +261,67 @@ public class Bienvenue extends AppCompatActivity {
 
         });
 
+    }
+
+    private void synchronisation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Synchronisation de la bse de Données entière");
+        builder.setMessage("Toues les données vont être remplacées ?");
+
+        // Bouton Oui
+        builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(Bienvenue.this, "Action confirmée", Toast.LENGTH_SHORT).show();
+                showProgressDialog();
+                Runnable task=() ->{
+                    runOnUiThread(() ->
+                            Toast.makeText(getApplicationContext(), entrepriseID+" "+ typeEntreprise , Toast.LENGTH_SHORT).show());
+
+                    Bienvenue.this.effacerDateBase(entrepriseID);
+                    Bienvenue.this.recupereDateBase(entrepriseID, typeEntreprise);
+                };
+                executorService.execute(task);
+            }
+        });
+
+        // Bouton Non
+        builder.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(Bienvenue.this, "Action annulée", Toast.LENGTH_SHORT).show();
+                dialog.dismiss(); // Fermer le dialogue
+            }
+        });
+
+        // Créer et afficher le dialogue
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu_1, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_synch) {
+            synchronisation();
+
+            return true;
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavUtils.navigateUpFromSameTask(this);
+        return true;
     }
 
 

@@ -1,0 +1,20 @@
+<!--<menu xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--    <item-->
+<!--        android:id="@+id/action_settings"-->
+<!--        android:title="Settings"-->
+<!--        android:orderInCategory="100"-->
+<!--        app:showAsAction="never" />-->
+<!--</menu>-->
+
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_synch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@android:drawable/ic_popup_sync"
+        android:title="Synchro Marks"
+        app:showAsAction="always"/>
+</menu>

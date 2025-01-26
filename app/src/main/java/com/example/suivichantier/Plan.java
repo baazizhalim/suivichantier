@@ -6,6 +6,9 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Entity(indices = {@Index("lotID")},foreignKeys = {
         @ForeignKey(entity = Lot.class,
                 parentColumns = "lotID",
@@ -69,6 +72,15 @@ public class Plan {
 
     @Override
     public String toString() {
-        return file; // Cette méthode détermine ce qui est affiché dans le Spinner
+
+        String pattern = "\\d+([a-zA-Z ]+)"; // Expression régulière
+
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(file);
+
+        if (matcher.find()) {
+            return matcher.group(1); // Cette méthode détermine ce qui est affiché dans le Spinner
+        }
+        return file;
     }
 }

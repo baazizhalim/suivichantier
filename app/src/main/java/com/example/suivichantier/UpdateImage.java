@@ -23,9 +23,9 @@ import java.io.IOException;
 public class UpdateImage extends Dialog {
 
     private Uri photoURI;
-    private DrawingView drawingView;
-    private Bitmap bitmap;
-    private String file;
+    private final DrawingView drawingView;
+    private final Bitmap bitmap;
+    private final String file;
     float scaleFactor ;//= 3.0f;
     Matrix matrix1 = new Matrix();
 
@@ -106,9 +106,9 @@ public class UpdateImage extends Dialog {
 
         private Paint paint;
         private Path path;
-        private Bitmap bitmap;
+        private final Bitmap bitmap;
         protected Canvas canvas;
-        private Paint bitmapPaint;
+        private final Paint bitmapPaint;
 
         public DrawingView(Context context, Bitmap backgroundBitmap) {
             super(context);
@@ -161,4 +161,6 @@ public class UpdateImage extends Dialog {
             return bitmap;
         }
     }
+
+
 }

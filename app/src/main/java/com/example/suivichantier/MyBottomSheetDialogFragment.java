@@ -3,7 +3,10 @@ package com.example.suivichantier;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,11 +17,12 @@ import android.graphics.Matrix;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,36 +36,28 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
-
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
@@ -70,6 +66,10 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
     protected Mark mark = null;
     protected int entrepriseID;
     protected String typeEntreprise;
+    protected int chantierID;
+    protected String nomEntreprise;
+    protected String nomChantier;
+    protected String nomClient;
     protected String typeLot;
     protected AppDatabase mDatabase;
     protected MotionEvent e;
@@ -79,15 +79,17 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
     Spinner etat;
     Spinner type;
     Spinner lot;
-    EditText dateAjout;
     Spinner priorite;
     Zoom z;
     Button buttonCancel;
     Button buttonDelete;
     Button buttonOK;
+    Button retour;
     Button buttonModifier;
-    Button buttonSynchroMark;
+    //Button buttonSynchroMark;
     Button btnCapture;
+    private float lastTouchX;
+    private float lastTouchY;
     int statut = 0;
     boolean nouveauMark = false;
     private String[] valeurs = new String[7];
@@ -97,15 +99,20 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
     protected LinearLayout barePhoto;
     protected TableRow[] rows = new TableRow[2];
     protected int i = 0;
-    //private float scaleFactor = 1.0f;
-    //private Matrix matrix = new Matrix();
+    private ScaleGestureDetector scaleGestureDetector;
+    private float scaleFactor = 1.0f;
+    private final Matrix matrix = new Matrix();
 
 
-    public MyBottomSheetDialogFragment(MarkView markView, MotionEvent e, Zoom z, int entrepriseID, String typeEntreprise, String typelot) {
+    public MyBottomSheetDialogFragment(MarkView markView, MotionEvent e, Zoom z, int entrepriseID, String nomEntreprise, String typeEntreprise, int chantierID, String nomClient,String nomChantier, String typelot) {
         this.markView = markView;
         this.e = e;
         this.z = z;
         this.entrepriseID = entrepriseID;
+        this.nomEntreprise = nomEntreprise;
+        this.chantierID = chantierID;
+        this.nomClient = nomClient;
+        this.nomChantier = nomChantier;
         this.typeEntreprise = typeEntreprise;
         this.typeLot = typelot;
         if (markView != null) {
@@ -123,10 +130,6 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         rows[0] = fenetre.findViewById(R.id.row1);
         rows[1] = fenetre.findViewById(R.id.row2);
 
-
-
-
-
         // Initialisez vos vues ici
         title = fenetre.findViewById(R.id.bottom_sheet_title);
         designation = fenetre.findViewById(R.id.designation);
@@ -134,7 +137,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         etat = fenetre.findViewById(R.id.etat);
         type = fenetre.findViewById(R.id.type);
         lot = fenetre.findViewById(R.id.lot);
-        dateAjout = fenetre.findViewById(R.id.dateAjout);
+        //dateAjout = fenetre.findViewById(R.id.dateAjout);
         priorite = fenetre.findViewById(R.id.priorite);
 
         List<String> options1 = new ArrayList<>();
@@ -143,7 +146,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         options1.add("TV");
 
         // Adapter pour le Spinner
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, options1);
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this.getContext(), R.layout.spinner_item, options1);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         etat.setAdapter(adapter1);
 
@@ -154,67 +157,74 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         options2.add("note");
 
         // Adapter pour le Spinner
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, options2);
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this.getContext(), R.layout.spinner_item, options2);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         type.setAdapter(adapter2);
 
         List<String> lots = new ArrayList<>();
-        lots.add("S/O");
-        lots.add("Maçonnerie");
-        lots.add("Ménuiserie");
-        lots.add("Plomberie");
-        lots.add("enduit");
-        lots.add("revetement");
-        lots.add("electricite");
-        lots.add("Equipements");
-        lots.add("Peinture");
-        lots.add("Etancheite");
-        lots.add("Autres");
+        if (typeLot.equals("CES")) {
+            lots.add("Maconnerie");
+            lots.add("Menuiserie");
+            lots.add("Plomberie");
+            lots.add("Enduit");
+            lots.add("Revetement");
+            lots.add("Electricite");
+            lots.add("Equipements");
+            lots.add("Peinture");
+            lots.add("Etancheite");
+            lots.add("Autres");
+        } else lots.add(typeLot);
 
         // Adapter pour le Spinner
-        ArrayAdapter<String> adapter4 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, lots);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter4 = new ArrayAdapter<>(this.getContext(), R.layout.spinner_item, lots);
+        adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         lot.setAdapter(adapter4);
-        lot.setEnabled(false);
-        if (typeLot.equals("CES")) lot.setEnabled(true);
+
 
         List<String> options3 = new ArrayList<>();
         options3.add("Normale");
         options3.add("Urgente");
 
         // Adapter pour le Spinner
-        ArrayAdapter<String> adapter3 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, options3);
+        ArrayAdapter<String> adapter3 = new ArrayAdapter<>(this.getContext(), R.layout.spinner_item, options3);
         adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         priorite.setAdapter(adapter3);
 
         buttonOK = fenetre.findViewById(R.id.bottom_ok_button);
+        retour = fenetre.findViewById(R.id.retour);
         buttonModifier = fenetre.findViewById(R.id.bottom_modifier_button);
         buttonDelete = fenetre.findViewById(R.id.bottom_delete_button);
-        if (typeEntreprise.equals("ER")) buttonDelete.setEnabled(false);
+        buttonDelete.setBackgroundColor(darkenColor(Color.RED, 0.5f));
         buttonCancel = fenetre.findViewById(R.id.bottom_cancel_button);
-        buttonSynchroMark = fenetre.findViewById(R.id.btnSynchroMark);
         btnCapture = fenetre.findViewById(R.id.btnCapture);
-        btnCapture.setEnabled(false);
+
 
         if (mark != null) {
-            if (!typeEntreprise.equals("ER")&& getNumeroPhotoDisponible(mark.getMarkID())!=0 ) btnCapture.setEnabled(true);
+            buttonDelete.setEnabled(!typeEntreprise.equals("ER"));
+            btnCapture.setEnabled(!typeEntreprise.equals("ER") && getNumeroPhotoDisponible(mark.getMarkID()) != 0);
             designation.setText(mark.getDesignation());
             observation.setText(mark.getObservation());
             etat.setSelection(options1.indexOf(mark.getStatut()));
             type.setSelection(options2.indexOf(mark.getType()));
             lot.setSelection(lots.indexOf(mark.getLot()));
-            dateAjout.setText(mark.getDate());
             priorite.setSelection(options3.indexOf(mark.getPriorite()));
-            if (etat.getSelectedItem().toString().equals("SNT"))
-                buttonModifier.setBackgroundColor(Color.RED);
-            else if (etat.getSelectedItem().toString().equals("TNV"))
-                buttonModifier.setBackgroundColor(Color.BLUE);
-            else buttonModifier.setBackgroundColor(Color.GREEN);
+            if (etat.getSelectedItem().toString().equals("SNT")) {
+                // Rouge assombri
+                buttonModifier.setBackgroundColor(darkenColor(Color.RED, 0.5f));
+            } else if (etat.getSelectedItem().toString().equals("TNV")) {
+                // Bleu assombri
+                buttonModifier.setBackgroundColor(darkenColor(Color.BLUE, 0.5f));
+            } else {
+                // Vert assombri
+                buttonModifier.setBackgroundColor(darkenColor(Color.GREEN, 0.5f));
+            }
+            buttonModifier.setEnabled(true);
             afficherBoutonPhotos(mark.getMarkID());
         } else {
             btnCapture.setEnabled(false);
-            buttonSynchroMark.setEnabled(false);
-            buttonModifier.setBackgroundColor(Color.RED);
+            buttonDelete.setEnabled(false);
+            buttonModifier.setEnabled(false);
+            buttonModifier.setBackgroundColor(darkenColor(Color.RED, 0.5f));
 
         }
 
@@ -239,15 +249,22 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
             }
         });
 
+        retour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss(); // Ferme le bottom sheet
+            }
+        });
+
         buttonModifier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (etat.getSelectedItem().toString().equals("SNT") && mark != null) {
-                    buttonModifier.setBackgroundColor(Color.BLUE);
+                    buttonModifier.setBackgroundColor(darkenColor(Color.BLUE, 0.5f));
                     etat.setSelection(1);
                 } else if (etat.getSelectedItem().toString().equals("TNV")) {
-                    buttonModifier.setBackgroundColor(Color.GREEN);
+                    buttonModifier.setBackgroundColor(darkenColor(Color.GREEN, 0.5f));
                     etat.setSelection(2);
                 }
 
@@ -258,23 +275,18 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View v) {
 
-                z.layout.removeView(view);
-                z.marks.remove(mark);
-                z.markViews.remove(markView);
-                mDatabase.markDao().delete(mark);
-                valeurs = null;
-                dismiss(); // Ferme le bottom sheet
+                supprimerMark();
             }
         });
-        buttonSynchroMark.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                synchroniserPhotos(mark);
-
-                //dismiss(); // Ferme le bottom sheet
-            }
-        });
+//        buttonSynchroMark.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                synchroniserPhotos(mark);
+//
+//                //dismiss(); // Ferme le bottom sheet
+//            }
+//        });
 
         btnCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -292,307 +304,322 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         return fenetre;
     }
 
+    public int darkenColor(int color, float factor) {
+        int a = Color.alpha(color);
+        int r = Math.round(Color.red(color) * factor);
+        int g = Math.round(Color.green(color) * factor);
+        int b = Math.round(Color.blue(color) * factor);
+        return Color.argb(a, r, g, b);
+    }
+
     private void afficherBoutonPhotos(String markID) {
         rows[0].removeAllViews();
         rows[1].removeAllViews();
         List<Photo> photos = mDatabase.photoDao().getAllPhotosMark(markID);
+        Log.d("photos", "afficherBoutonPhotos: "+photos.size());
         Button[] photoButtons = new Button[2];
         Button[] photoDeletes = new Button[2];
 
-        final int[] i = {0};
-        photos.forEach( (Photo photo) ->{
-            int index = i[0];
-            photoButtons[index] = new Button(getContext());
-            photoButtons[index].setText(photo.getFile());
-            photoButtons[index].setContentDescription(String.valueOf(photo.getPhotoID()));
-            rows[index].addView(photoButtons[index]);
-            photoDeletes[index] = new Button(getContext());
-            photoDeletes[index].setText("Delete");
-            photoDeletes[index].setContentDescription(String.valueOf(photo.getPhotoID()));
-            if (typeEntreprise.equals("ER")) photoDeletes[index].setEnabled(false);
-            rows[index].addView(photoDeletes[index]);
-            photoButtons[index].setOnClickListener(new View.OnClickListener() {
-                float scaleFactor = 1.0f;
-                Matrix matrix = new Matrix();
+        AtomicInteger index = new AtomicInteger(0);
+        photos.forEach((Photo photo) -> {
 
+            photoButtons[index.get()] = new Button(getContext());
+            photoButtons[index.get()].setText(photo.getFile());
+            photoButtons[index.get()].setContentDescription(String.valueOf(photo.getPhotoID()));
+            rows[index.get()].addView(photoButtons[index.get()]);
+            photoDeletes[index.get()] = new Button(getContext());
+            photoDeletes[index.get()].setText("Delete");
+            photoDeletes[index.get()].setContentDescription(String.valueOf(photo.getPhotoID()));
+            if (typeEntreprise.equals("ER")) photoDeletes[index.get()].setEnabled(false);
+            rows[index.get()].addView(photoDeletes[index.get()]);
+            photoButtons[index.get()].setOnClickListener(new View.OnClickListener() {
+
+                @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public void onClick(View v) {
 
-                    File appDir = getContext().getExternalFilesDir(null); // Répertoire principal de l'application
-                    File myDir = new File(appDir, "/photos/"+ mark.getMarkID() ); // Sous-répertoire
+
+                    File appDir = getContext().getFilesDir(); // Répertoire principal de l'application
+                    File myDir = new File(appDir, nomEntreprise + "/" + nomChantier + "/photos/" + mark.getMarkID()); // Sous-répertoire
                     if (!myDir.exists()) {
                         myDir.mkdirs();
                     }
                     //Photo photo = mDatabase.photoDao().getOnePhoto(Integer.parseInt(v.getContentDescription().toString()));
                     String imagePath = myDir + "/" + photo.getFile();
+                    Log.d("filepath", "chemein fichier: "+imagePath);
+                    File file=new File(imagePath);
+                    if(!file.exists()){
+                        ProgressDialog progressDialog = new ProgressDialog(getContext());
+                        progressDialog.setMessage("Téléchargement en cours...");
+                        progressDialog.setCancelable(false);
+                        progressDialog.show();
+                        OkHttpClient client=new OkHttpClient();
+                        String url="http://" + MainActivity.ip + ":3000/download";
 
-                    // Charger l'image à partir du fichier JPEG
-                    Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath);
+                        CompletableFuture<Boolean> downloadFuture = downloadFile(getContext(),  client, url, photo.getFile(), mark,nomClient,  nomChantier, nomEntreprise);
 
-                    // Créez une boîte de dialogue pour afficher l'image
-                    Dialog dialog = new Dialog(getContext());
-                    dialog.setContentView(R.layout.affiche_image);
-                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                    // Trouvez l'ImageView dans le layout de la boîte de dialogue
-                    ImageView imageView = dialog.findViewById(R.id.imageView);
-
-                    //imageView.setImageMatrix(matrix);
-                    ImageButton zoomInButton = dialog.findViewById(R.id.zoom_in_button);
-                    ImageButton zoomOutButton = dialog.findViewById(R.id.zoom_out_button);
-                    ImageButton pen = dialog.findViewById(R.id.pen);
-                    ImageButton close = dialog.findViewById(R.id.close);
-                    // Affichez l'image chargée dans l'ImageView
-                    imageView.setImageBitmap(imageBitmap);
-//                        scaleFactor = (float) imageView.getWidth() / (float) imageBitmap.getWidth();
-//                        matrix.setScale(scaleFactor, scaleFactor);
-//                        float dx = (float) imageView.getWidth() / 2 - (float) imageBitmap.getWidth() / 2 * scaleFactor;
-//                        float dy = (float) imageView.getHeight() / 2 - (float) imageBitmap.getHeight() / 2 * scaleFactor;
-//                        matrix.postTranslate(dx, dy);
-//                        imageView.setImageMatrix(matrix);
-                    zoomInButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            scaleFactor *= 1.25f;
-                            scaleFactor = Math.max(0.3f, Math.min(scaleFactor, 8.0f));
-                            matrix.setScale(scaleFactor, scaleFactor);
-                            float dx = (float) imageView.getWidth() / 2 - (float) imageBitmap.getWidth() / 2 * scaleFactor;
-                            float dy = (float) imageView.getHeight() / 2 - (float) imageBitmap.getHeight() / 2 * scaleFactor;
-                            matrix.postTranslate(dx, dy);
-                            imageView.setImageMatrix(matrix);
-
-
-                        }
-                    });
-
-                    zoomOutButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            scaleFactor *= 0.8f;
-                            scaleFactor = Math.max(0.3f, Math.min(scaleFactor, 8.0f));
-                            matrix.setScale(scaleFactor, scaleFactor);
-                            float dx = (float) imageView.getWidth() / 2 - (float) imageBitmap.getWidth() / 2 * scaleFactor;
-                            float dy = (float) imageView.getHeight() / 2 - (float) imageBitmap.getHeight() / 2 * scaleFactor;
-                            matrix.postTranslate(dx, dy);
-                            imageView.setImageMatrix(matrix);
-
-                        }
-                    });
-
-                    pen.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            UpdateImage updateimage = new UpdateImage(getContext(), imageBitmap, imagePath);
-                            updateimage.show();
-                            updateimage.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                @Override
-                                public void onDismiss(DialogInterface dialog) {
-                                    Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath);
-                                    imageView.setImageBitmap(imageBitmap);
+                        downloadFuture.thenAccept(success -> {
+                            getActivity().runOnUiThread(() -> {
+                                progressDialog.dismiss(); // Fermer le ProgressDialog après le téléchargement
+                                if (success) {
+                                    afficherPhoto(imagePath);
+                                } else {
+                                    Toast.makeText(requireContext(), "Téléchargement échoué", Toast.LENGTH_SHORT).show();
                                 }
                             });
-
-                        }
-                    });
-
-                    close.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-
-
-                        }
-                    });
+                        }).exceptionally(ex -> {
+                            getActivity().runOnUiThread(() -> {
+                                progressDialog.dismiss(); // Fermer le ProgressDialog en cas d'exception
+                                Toast.makeText(requireContext(), "Erreur : " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                            return null;
+                        });
 
 
-                    dialog.show();
+                    }
+                    else  afficherPhoto(imagePath);
+
                 }
             });
-            photoDeletes[index].setOnClickListener(v -> {
+            photoDeletes[index.get()].setOnClickListener(v -> {
+                attentionSupPhoto(photo, index.get());
+
+
+            });
+            index.getAndIncrement();
+        });
+
+
+    }
+
+    public static CompletableFuture<Boolean> downloadFile(Context context, OkHttpClient client, String url, String fileName, Mark mark, String nomClient, String nomChantier, String nomEntreprise) {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
+        Request request = new Request.Builder()
+                .url(url + "/" + nomClient + "/" + nomChantier + "/photos/" + fileName)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("Download", "Download failed: " + e.getMessage());
+                if (context instanceof Activity) {
+                    ((Activity) context).runOnUiThread(() -> Toast.makeText(context, "Download failed", Toast.LENGTH_SHORT).show());
+                }
+                result.complete(false);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                try {
+                    if (!response.isSuccessful()) {
+                        Log.e("Download", "Server returned error: " + response.code());
+                        if (context instanceof Activity) {
+                            ((Activity) context).runOnUiThread(() -> Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show());
+                        }
+                        result.complete(false);
+                        return;
+                    }
+
+                    File appDir = context.getFilesDir();
+                    File subDir = new File(appDir, nomEntreprise + "/" + nomChantier + "/photos/" + mark.getMarkID()+ "/" );
+
+                    if (!subDir.exists() && !subDir.mkdirs()) {
+                        Log.e("Download", "Failed to create directory");
+                        if (context instanceof Activity) {
+                            ((Activity) context).runOnUiThread(() -> Toast.makeText(context, "Failed to create directory", Toast.LENGTH_SHORT).show());
+                        }
+                        result.complete(false);
+                        return;
+                    }
+
+                    File file = new File(subDir, fileName);
+                    try (InputStream inputStream = response.body().byteStream();
+                         FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                        byte[] buffer = new byte[2048];
+                        int bytesRead;
+                        while ((bytesRead = inputStream.read(buffer)) != -1) {
+                            fileOutputStream.write(buffer, 0, bytesRead);
+                        }
+                        if (context instanceof Activity) {
+                            ((Activity) context).runOnUiThread(() -> Toast.makeText(context, "Download complete", Toast.LENGTH_SHORT).show());
+                        }
+                        result.complete(true);
+                    } catch (IOException e) {
+                        Log.e("Download", "Error saving file: " + e.getMessage());
+                        if (context instanceof Activity) {
+                            ((Activity) context).runOnUiThread(() -> Toast.makeText(context, "Error saving file", Toast.LENGTH_SHORT).show());
+                        }
+                        result.complete(false);
+                    }
+                } catch (Exception e) {
+                    Log.e("Download", "Unexpected error: " + e.getMessage(), e);
+                    result.complete(false);
+                }
+            }
+        });
+
+        return result;
+    }
+
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void afficherPhoto(String imagePath){
+        Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath);
+
+        // Créez une boîte de dialogue pour afficher l'image
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.affiche_image);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        // Trouvez l'ImageView dans le layout de la boîte de dialogue
+        ImageView imageView = dialog.findViewById(R.id.imageView);
+
+        //imageView.setImageMatrix(matrix);
+
+        ImageButton pen = dialog.findViewById(R.id.pen);
+        ImageButton close = dialog.findViewById(R.id.close);
+        // Affichez l'image chargée dans l'ImageView
+        imageView.setImageBitmap(imageBitmap);
+        scaleGestureDetector = new ScaleGestureDetector(requireContext(), new MyBottomSheetDialogFragment.ScaleListener(imageView, imageBitmap));
+
+
+        imageView.setOnTouchListener((vv, event) -> {
+            scaleGestureDetector.onTouchEvent(event);
+            final int action = event.getAction();
+            switch (action & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN: {
+                    final float x = event.getX();
+                    final float y = event.getY();
+                    lastTouchX = x;
+                    lastTouchY = y;
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    final float x = event.getX();
+                    final float y = event.getY();
+                    final float dx = x - lastTouchX;
+                    final float dy = y - lastTouchY;
+                    matrix.postTranslate(dx, dy);
+                    imageView.setImageMatrix(matrix);
+
+                    lastTouchX = x;
+                    lastTouchY = y;
+
+
+                    break;
+                }
+
+
+                default:
+                    return false;
+            }
+            return true;
+        });
+
+        pen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UpdateImage updateimage = new UpdateImage(getContext(), imageBitmap, imagePath);
+                updateimage.show();
+                updateimage.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath);
+                        imageView.setImageBitmap(imageBitmap);
+                    }
+                });
+
+            }
+        });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+
+
+            }
+        });
+
+
+        dialog.show();
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        ImageView imageView;
+        Bitmap bitmap;
+
+        public ScaleListener(ImageView imageView, Bitmap bitmap) {
+            this.imageView = imageView;
+            this.bitmap = bitmap;
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            scaleFactor *= detector.getScaleFactor();
+            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 5.0f));
+            matrix.setScale(scaleFactor, scaleFactor);
+            float dx = (float) imageView.getWidth() / 2 - (float) bitmap.getWidth() / 2 * scaleFactor;
+            float dy = (float) imageView.getHeight() / 2 - (float) bitmap.getHeight() / 2 * scaleFactor;
+            matrix.postTranslate(dx, dy);
+            imageView.setImageMatrix(matrix);
+            return false;
+        }
+    }
+
+    private void attentionSupPhoto(Photo photo, int index) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Suppression Photo");
+        builder.setMessage("la Photo va être supprimée ?");
+
+        // Bouton Oui
+        builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(requireContext(), "Action confirmée", Toast.LENGTH_SHORT).show();
                 deleteLocalFile(photo.getFile());
                 rows[index].removeAllViews();
                 btnCapture.setEnabled(true);
-
-
-            });
-            i[0]++;
-        });
-
-
-    }
-
-
-    private void synchroniserPhotos(Mark mark) {
-
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("http://" + MainActivity.ip + ":3000/download/" + mark.getMarkID())
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-
-
-
-                        String jsonResponse = response.body().string();
-
-                        // Utiliser Gson pour convertir la réponse JSON en une liste
-                        Gson gson = new Gson();
-                        Type listType = new TypeToken<List<String>>(){}.getType();
-                        List<String> serverFiles = gson.fromJson(jsonResponse, listType);
-
-                        // Liste des fichiers présents localement sur le client
-                        List<String> localFiles = getLocalFiles(mark.getMarkID());
-
-                        // Parcourir les fichiers du serveur
-                        if (typeEntreprise.equals("ER")) {
-                            for (int i = 0; i < serverFiles.size(); i++) {
-                                String serverFile = serverFiles.get(i);
-
-                                // Si le fichier du serveur n'est pas présent localement, on le télécharge
-                                if (!localFiles.contains(serverFile)) {
-                                    downloadFile(serverFile);
-                                }
-                            }
-
-                            // Vérifier si des fichiers locaux ont été supprimés du serveur on les supprime localement
-                            for (String localFile : localFiles) {
-                                if (!serverFiles.toString().contains(localFile)) {
-                                    // Le fichier a été supprimé du serveur, on le supprime localement
-                                    deleteLocalFile(localFile);
-                                }
-                            }
-                        } else if (typeEntreprise.equals("ES")||typeEntreprise.equals("client")) {
-                            for (int i = 0; i < serverFiles.size(); i++) {
-                                String serverFile = serverFiles.get(i);
-
-                                // Si le fichier du serveur n'est pas présent localement, on le supprime
-                                if (!localFiles.contains(serverFile)) {
-                                    deleteRemoteFile(serverFile);
-                                }
-                            }
-
-                            // Vérifier si des fichiers locaux ont été supprimés du serveur
-                            for (String localFile : localFiles) {
-                                if (!serverFiles.toString().contains(localFile)) {
-                                    // Le fichier local a été supprimé du serveur, on le televerse
-                                    uploadFile(localFile);
-                                }
-                            }
-                        }
-
-
-                }
-
             }
         });
 
-    }
-
-    private void deleteRemoteFile(String remoteFile) {
-        OkHttpClient client = new OkHttpClient();
-
-
-        Request request = new Request.Builder()
-                .url("http://" + MainActivity.ip + ":3000/upload/delete/photo/" + remoteFile)
-                .delete()
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
+        // Bouton Non
+        builder.setNegativeButton("Non", new DialogInterface.OnClickListener() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                z.runOnUiThread(() -> Toast.makeText(requireActivity(), "Échec de l'upload", Toast.LENGTH_SHORT).show());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    z.runOnUiThread(() -> Toast.makeText(requireActivity(), "Fichier supprimé avec succès", Toast.LENGTH_SHORT).show());
-                } else {
-                    z.runOnUiThread(() -> Toast.makeText(requireActivity(), "Erreur lors de l'upload", Toast.LENGTH_SHORT).show());
-                }
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(requireContext(), "Action annulée", Toast.LENGTH_SHORT).show();
+                dialog.dismiss(); // Fermer le dialogue
             }
         });
 
+        // Créer et afficher le dialogue
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
-    private void uploadFile(String fileName) {
-        OkHttpClient client = new OkHttpClient();
-        File appDir = getContext().getExternalFilesDir(null);
-        File file = new File(appDir, "photos/" + mark.getMarkID() + "/" + fileName);
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("photo", file.getName(),
-                        RequestBody.create(MediaType.parse("multipart/form-data"), file))
-                .addFormDataPart("markID", mark.getMarkID())
-                .build();
-
-        Request request = new Request.Builder()
-                .url("http://" + MainActivity.ip + ":3000/upload/uploadphoto/photo/" + entrepriseID)
-                .put(requestBody)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                z.runOnUiThread(() -> Toast.makeText(requireActivity(), "Échec de l'upload", Toast.LENGTH_SHORT).show());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    z.runOnUiThread(() -> Toast.makeText(requireActivity(), "Fichier uploadé avec succès", Toast.LENGTH_SHORT).show());
-                } else {
-                    z.runOnUiThread(() -> Toast.makeText(requireActivity(), "Erreur lors de l'upload", Toast.LENGTH_SHORT).show());
-                }
-            }
-        });
-    }
-
-
-    private void downloadFile(String fileName) {
-        // Implémentation pour télécharger le fichier depuis le serveur (via HTTP )
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("http://" + MainActivity.ip + ":3000/download/photos/" + fileName)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    // Sauvegarder le fichier téléchargé localement
-
-                    saveFileLocally(response.body().byteStream(), fileName);
-
-                }
-            }
-        });
-    }
-
-    // Fonction pour supprimer un fichier localement
     private void deleteLocalFile(String fileName) {
-        File appDir = getContext().getExternalFilesDir(null);
-        File file = new File(appDir, "photos/" + mark.getMarkID() + "/" + fileName);
+        File appDir = getContext().getFilesDir();
+        File file = new File(appDir, nomEntreprise + "/" + nomChantier + "/photos/" + mark.getMarkID() + "/" + fileName);
         if (file.exists()) {
             file.delete();
             deleteLocalyFilefromDB(fileName);
-
         }
+        file = new File(appDir, nomEntreprise + "/" + nomChantier + "/photos/" + mark.getMarkID());
+        if (file.exists() && file.isDirectory() && (file.list().length==0)) file.delete();
+    }
+
+    private void deleteLocalFileByMark(Mark mark) {
+        List<String> files = getLocalFiles(mark.getMarkID());
+        File appDir = getContext().getFilesDir();
+        files.forEach(fileName -> {
+            File file = new File(appDir, nomEntreprise + "/" + nomChantier + "/photos/" + mark.getMarkID() + "/" + fileName);
+            if (file.exists()) {
+                file.delete();
+                deleteLocalyFilefromDB(fileName);
+
+            }
+        });
+        File file = new File(appDir, nomEntreprise + "/" + nomChantier + "/photos/" + mark.getMarkID());
+        if (file.exists() && file.isDirectory() && file.listFiles().length == 0) file.delete();
     }
 
     private void deleteLocalyFilefromDB(String fileName) {
@@ -600,48 +627,13 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     }
 
-
-    // Fonction pour sauvegarder un fichier localement
-    private void saveFileLocally(InputStream inputStream, String fileName) {
-        try {
-            File appDir = getContext().getExternalFilesDir(null);
-            File file = new File(appDir, "photos/" + mark.getMarkID() + "/" + fileName);
-            FileOutputStream fos = new FileOutputStream(file);
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) != -1) {
-                fos.write(buffer, 0, length);
-            }
-            fos.close();
-            saveFilelocalyToDB(fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void saveFilelocalyToDB(String fileName) {
-        int currentdate = (int) new Date().getTime();
-        int i = getNumeroPhotoDisponible(mark.getMarkID());
-        String photoiD = mark.getMarkID() + "_" + i;
-        Photo photo = new Photo(photoiD, fileName, String.valueOf(currentdate), mark.getMarkID(), entrepriseID);
-        mDatabase.photoDao().insert(photo);
-
-    }
-
     private List<String> getLocalFiles(String markID) {
-        File appDir = getContext().getExternalFilesDir(null);
-
-        File directory = new File(appDir, "/photos/" + markID + "/");
-        File[] files = directory.listFiles();
+        File appDir = getContext().getFilesDir();
         List<String> fileNames = new ArrayList<>();
-        if (files != null) {
-            for (File file : files) {
-                fileNames.add(file.getName());
-            }
-        }
+        File directory = new File(appDir, nomEntreprise + "/" + nomChantier + "/photos/" + markID + "/");
+        if (directory.list() != null) fileNames = Arrays.asList(directory.list());
         return fileNames;
     }
-
 
     @SuppressLint("QueryPermissionsNeeded")
     private void openCamera() {
@@ -677,19 +669,23 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
             String xString = parts[parts.length - 1];
             // Convertir cette valeur en entier
             num = Integer.parseInt(xString);
-            num = num % 2+1;
+            num = num % 2 + 1;
         }
 
         return num;
     }
 
     private void saveImage(Bitmap bitmap) {
-        int currentdate = (int) new Date().getTime();
+        LocalDate currentDate = LocalDate.now();
+
+        // Formater la date au format YYYY-MM-DD
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = currentDate.format(formatter);
         int i = getNumeroPhotoDisponible(mark.getMarkID());
         String fileName = "photo_" + mark.getMarkID() + "_" + i + ".jpg";
         String photoiD = mark.getMarkID() + "_" + i;
         saveImageAsJPEG(bitmap, fileName);
-        Photo photo = new Photo(photoiD, fileName, String.valueOf(currentdate), mark.getMarkID(), entrepriseID);
+        Photo photo = new Photo(photoiD, fileName, formattedDate, mark.getMarkID(), entrepriseID);
         mDatabase.photoDao().insert(photo);
         dismiss();  // Ferme le BottomSheetDialogFragment après la sauvegarde
     }
@@ -708,8 +704,8 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
 // Redimensionner l'image pour correspondre à l'écran
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, screenWidth, screenHeight, true);
 
-        File appDir = getContext().getExternalFilesDir(null); // Répertoire principal de l'application
-        File myDir = new File(appDir, "/photos/" + mark.getMarkID()); // Sous-répertoire
+        File appDir = getContext().getFilesDir(); // Répertoire principal de l'application
+        File myDir = new File(appDir, nomEntreprise + "/" + nomChantier + "/photos/" + mark.getMarkID()); // Sous-répertoire
         if (!myDir.exists()) {
             myDir.mkdirs();
         }
@@ -773,13 +769,13 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
                 mark.setStatut(etat.getSelectedItem().toString());
                 mark.setType(type.getSelectedItem().toString());
                 mark.setLot(lot.getSelectedItem().toString());
-                mark.setDate(dateAjout.getText().toString());
+                //mark.setDate(dateAjout.getText().toString());
                 mark.setPriorite(priorite.getSelectedItem().toString());
                 if (etat.getSelectedItem().toString().equals("SNT"))
-                    view.setBackgroundColor(Color.RED);
+                    view.setBackgroundColor(darkenColor(Color.RED, 0.5f));
                 else if (etat.getSelectedItem().toString().equals("TNV"))
-                    view.setBackgroundColor(Color.BLUE);
-                else view.setBackgroundColor(Color.GREEN);
+                    view.setBackgroundColor(darkenColor(Color.BLUE, 0.5f));
+                else view.setBackgroundColor(darkenColor(Color.GREEN, 0.5f));
                 mDatabase.markDao().update(mark);
             }
         }
@@ -795,12 +791,64 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
             valeurs[1] = observation.getText().toString();
             valeurs[2] = etat.getSelectedItem().toString();
             valeurs[3] = type.getSelectedItem().toString();
-            valeurs[4] = dateAjout.getText().toString();
+            LocalDate currentDate = LocalDate.now();
+
+            // Formater la date au format YYYY-MM-DD
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String formattedDate = currentDate.format(formatter);
+
+            valeurs[4] = formattedDate;
             valeurs[5] = priorite.getSelectedItem().toString();
             valeurs[6] = lot.getSelectedItem().toString();
-            if(valeurs[6].equals("S/O")) valeurs[6] = typeLot;
+            if (valeurs[6].equals("S/O")) valeurs[6] = typeLot;
         }
         return valeurs;
     }
+
+
+    private void supprimerMark() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Supprission Marque");
+        builder.setMessage("la marque va être supprimée ainsi que ses photos ?");
+
+        // Bouton Oui
+        builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(requireContext(), "Action confirmée", Toast.LENGTH_SHORT).show();
+
+                Runnable task = () -> {
+
+                    z.runOnUiThread(() -> {
+                        Toast.makeText(requireContext(), entrepriseID + " " + typeEntreprise, Toast.LENGTH_SHORT).show();
+                        z.layout.removeView(view);
+                        z.marks.remove(mark);
+                        z.markViews.remove(markView);
+                        mDatabase.markDao().delete(mark);
+                        deleteLocalFileByMark(mark);
+                        valeurs = null;
+                        dismiss(); // Ferme le bottom sheet
+                    });
+                };
+                Executor executorService = Executors.newFixedThreadPool(2);
+                executorService.execute(task);
+            }
+        });
+
+        // Bouton Non
+        builder.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(requireContext(), "Action annulée", Toast.LENGTH_SHORT).show();
+                dialog.dismiss(); // Fermer le dialogue
+            }
+        });
+
+        // Créer et afficher le dialogue
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+
 }
 

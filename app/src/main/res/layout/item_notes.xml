@@ -2,14 +2,70 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="horizontal"
+    android:padding="4dp">
+    <TextView
+        android:id="@+id/item_text0"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Item"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
 
     <TextView
-        android:id="@+id/item_text"
-        android:layout_width="wrap_content"
+        android:id="@+id/item_text1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
         android:text="Item"
-        android:textSize="16sp"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/item_text2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Item"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/item_text6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Item"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/item_text3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Item"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/item_text4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Item"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/item_text5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Item"
+        android:textSize="14sp"
         android:textColor="@color/white"/>
 </LinearLayout>

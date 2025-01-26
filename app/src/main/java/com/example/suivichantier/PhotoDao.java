@@ -14,6 +14,7 @@ public interface PhotoDao {
     void insert(Photo photo );
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Photo> photos);
+
     @Query("SELECT * FROM photo")
     List<Photo> getAllPhotos();
 
@@ -27,7 +28,7 @@ public interface PhotoDao {
     int deletePhoto(String file);
 
     @Query("SELECT file FROM photo where markID=:markID")
-    List<String> getAllfilesMark(String markID);
+    List<String> getAllNameFilesOfMark(String markID);
 
     @Delete
     int delete(Photo photo);

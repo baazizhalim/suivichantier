@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/fichier_2_100">
+    android:background="@drawable/affichage_2_100">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -17,15 +17,16 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginTop="50dp"
+            android:gravity="top|center"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/nom"
                 android:layout_width="400dp"
                 android:layout_height="60dp"
-                android:background="#0659D5"
                 android:gravity="center"
                 android:text="TextView"
                 android:textAlignment="center"
@@ -44,23 +45,22 @@
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textColorHint="#FEF000"
-                android:textSize="24sp"
-                 />
+                android:textSize="24sp" />
 
-            <Button
-                android:id="@+id/synchro"
-                style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
-                android:layout_width="220dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="40dp"
-                android:background="@drawable/rounded_button_valider"
-                android:gravity="center"
-                android:text="SYNCHRONISER"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textColorHint="#FEF000"
-                android:textSize="24sp"
-                 />
+            <!--            <Button-->
+            <!--                android:id="@+id/synchro"-->
+            <!--                style="@android:style/Widget.Material.Light.Button.Borderless.Colored"-->
+            <!--                android:layout_width="220dp"-->
+            <!--                android:layout_height="60dp"-->
+            <!--                android:layout_marginTop="40dp"-->
+            <!--                android:background="@drawable/rounded_button_valider"-->
+            <!--                android:gravity="center"-->
+            <!--                android:text="SYNCHRONISER"-->
+            <!--                android:textAlignment="center"-->
+            <!--                android:textColor="@color/white"-->
+            <!--                android:textColorHint="#FEF000"-->
+            <!--                android:textSize="24sp"-->
+            <!--                 />-->
         </LinearLayout>
     </FrameLayout>
 

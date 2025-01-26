@@ -15,19 +15,29 @@ import androidx.room.Room;
 import java.util.List;
 
 public class MyAdapterPlanExecution extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private Context context;
+    private final Context context;
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
 
-    private List<PlanExecution> items;
+    private final List<PlanExecution> items;
+    private final String nomClient;
+    private int chantierID;
+    private int entrepriseID;
+    private final String nomChantier;
+    private final String typeEntreprise;
+    private final String nomEntreprise;
 
-    private AppDatabase mDatabase;
 
-    public MyAdapterPlanExecution(Context context,List<PlanExecution> items ) {
+    public MyAdapterPlanExecution(Context context,List<PlanExecution> items ,String nomClient,String nomChantier,int chantierId,String nomEntreprise,int entrepriseID,String typeEntreprise) {
         this.context = context;
         this.items = items;
-
-        mDatabase = Room.databaseBuilder(context, AppDatabase.class, "my-database").fallbackToDestructiveMigration().allowMainThreadQueries().build();
+        this.entrepriseID=entrepriseID;
+        this.chantierID= chantierId;
+        this.typeEntreprise=typeEntreprise;
+        this.nomChantier=nomChantier;
+        this.nomClient=nomClient;
+        this.nomEntreprise=nomEntreprise;
+        //mDatabase = Room.databaseBuilder(context, AppDatabase.class, "my-database").fallbackToDestructiveMigration().allowMainThreadQueries().build();
 
     }
 
@@ -70,7 +80,14 @@ public class MyAdapterPlanExecution extends RecyclerView.Adapter<RecyclerView.Vi
                 public void onClick(View v) {
                    Intent intent = new Intent(context, Zoomfile.class);
                     intent.putExtra("file", item.getFile());
-                    intent.putExtra("type", "planexecution");
+                    intent.putExtra("type", "plansexec");
+                    intent.putExtra("nomClient", nomClient);
+                    intent.putExtra("nomChantier", nomChantier);
+                    intent.putExtra("chantierID", chantierID);
+                    intent.putExtra("entrepriseID", entrepriseID);
+                    intent.putExtra("nomEntreprise", nomEntreprise);
+                    intent.putExtra("typeEntreprise", typeEntreprise);
+                    intent.putExtra("parentActivity", "MyAdapterPlanExecution");
                     startActivity(context,intent,null);
                 }
             });

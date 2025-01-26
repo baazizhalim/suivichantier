@@ -44,4 +44,7 @@ public interface LotDao {
 
     @Query("SELECT * FROM lot where chantierID=:cid and description=:desc")
     List<Lot> getLot(int cid, String desc);
+
+    @Query("SELECT * FROM lot where lotID=:id")
+    Lot getLotById(int id);
 }

@@ -11,22 +11,23 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import java.util.List;
 
 public class MyAdapterChantier extends RecyclerView.Adapter<MyAdapterChantier.MyViewHolder> {
-    private int entrepriseID ;
-    private String nomEntreprise ;
-    private String typeEntreprise ;
-
-    private List<ListItemChantier> itemList;
-    private Context context;
+    private final int entrepriseID ;
+    private final String nomEntreprise ;
+    private final String typeEntreprise ;
+    private final List<ListItemChantier> itemList;
+    private final Context context;
+    //private boolean nomClient;
+    private AppDatabase mDatabase;
 
     public MyAdapterChantier(Context context, List<ListItemChantier> itemList, int entrepriseID , String nomEntreprise , String typeEntreprise ) {
         this.entrepriseID = entrepriseID;
         this.nomEntreprise = nomEntreprise;
         this.typeEntreprise = typeEntreprise;
-
         this.context = context;
         this.itemList = itemList;
     }
@@ -46,8 +47,6 @@ public class MyAdapterChantier extends RecyclerView.Adapter<MyAdapterChantier.My
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Gérer l'événement de clic sur le bouton ici
-                // Par exemple, afficher un toast ou effectuer une action
 
                 Intent intent = new Intent(context, MenuPrincipal.class);
                 intent.putExtra("nomEntreprise", nomEntreprise);
@@ -55,10 +54,17 @@ public class MyAdapterChantier extends RecyclerView.Adapter<MyAdapterChantier.My
                 intent.putExtra("typeEntreprise", typeEntreprise);
                 intent.putExtra("chantierID", item.getChantierID());
                 intent.putExtra("nomChantier", item.getNom());
+                //intent.putExtra("nomClient", getNomClient(item.getChantierID()));
 
                 startActivity(context,intent,null);
             }
         });
+    }
+
+    private String getNomClient(int chantierID) {
+        mDatabase = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "my-database").fallbackToDestructiveMigration().allowMainThreadQueries().build();
+        return mDatabase.chantierDao().getClientName(chantierID);
+
     }
 
     @Override
@@ -75,4 +81,6 @@ public class MyAdapterChantier extends RecyclerView.Adapter<MyAdapterChantier.My
             button = itemView.findViewById(R.id.button);
         }
     }
+
+
 }

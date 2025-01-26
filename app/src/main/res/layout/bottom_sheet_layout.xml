@@ -2,23 +2,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/affichage_2_100"
     android:orientation="vertical"
-    android:padding="5dp"
-    android:background="@drawable/fichier_2_100">
+    android:padding="5dp">
 
     <!-- Ajoutez ici vos vues (TextView, EditText, Button, etc.) -->
+    <Button
+        android:id="@+id/retour"
+        android:layout_width="36dp"
+        android:layout_height="27dp"
+        android:background="?attr/homeAsUpIndicator"
+        android:backgroundTint="#80CBC4"
+        android:backgroundTintMode="add"
+        android:textColorHint="@android:color/holo_green_light" />
+
     <TextView
         android:id="@+id/bottom_sheet_title"
-        android:layout_width="116dp"
+        android:layout_width="208dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginTop="20dp"
         android:fontFamily="sans-serif-medium"
-        android:padding="5dp"
+
         android:text="Marque"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/white"/>
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,9 +41,9 @@
             android:gravity="right"
             android:padding="5dp"
             android:text="Désignation : "
+            android:textColor="@color/white"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/designation"
@@ -55,39 +65,42 @@
             android:gravity="right"
             android:padding="5dp"
             android:text="Observation : "
+            android:textColor="@color/white"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/observation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
-            android:padding="5dp" />
+            android:padding="5dp"
+            android:textColor="@color/white"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
 
         <TextView
-            android:layout_width="120dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:padding="5dp"
-            android:text="Priorité : "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:paddingHorizontal="2dp"
+            android:paddingVertical="5dp"
+            android:text="Priorité:"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/priorite"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
-            android:paddingHorizontal="5dp"
+            android:paddingHorizontal="2dp"
             android:paddingVertical="5dp"
             android:textColor="@color/white" />
 
@@ -95,41 +108,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:paddingHorizontal="5dp"
+            android:paddingHorizontal="2dp"
             android:paddingVertical="5dp"
-            android:text="Type : "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:text="Type:"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/type"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
-            android:paddingHorizontal="5dp"
-            android:paddingVertical="5dp"
-            android:textColor="@color/white"
-            android:textSize="16dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:paddingHorizontal="5dp"
-            android:paddingVertical="5dp"
-            android:text="Date d'ajout : "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
-
-        <EditText
-            android:id="@+id/dateAjout"
-            android:layout_width="77dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:inputType="date"
-            android:paddingHorizontal="5dp"
+            android:paddingHorizontal="2dp"
             android:paddingVertical="5dp"
             android:textColor="@color/white" />
 
@@ -137,20 +128,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:paddingHorizontal="5dp"
+            android:paddingHorizontal="2dp"
             android:paddingVertical="5dp"
-            android:text="Etat : "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:text="Etat:"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/etat"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
-            android:hint="Etat"
-            android:paddingHorizontal="5dp"
+            android:paddingHorizontal="2dp"
             android:paddingVertical="5dp"
             android:textColor="@color/white" />
 
@@ -158,22 +148,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:paddingHorizontal="5dp"
+            android:paddingHorizontal="2dp"
             android:paddingVertical="5dp"
-            android:text="Lot : "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:text="Lot:"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/lot"
-            android:layout_width="wrap_content"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
-            android:hint="Etat"
-            android:paddingHorizontal="5dp"
+            android:paddingHorizontal="2dp"
             android:paddingVertical="5dp"
             android:textColor="@color/white" />
+
+
 
     </LinearLayout>
 
@@ -186,40 +177,43 @@
         android:layout_marginBottom="5dp"
         android:gravity="center"
         android:orientation="horizontal">
+
         <Button
             android:id="@+id/btnCapture"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
+            android:layout_marginHorizontal="10dp"
             android:background="@drawable/rounded_button_valider"
             android:onClick="openCamera"
             android:padding="5dp"
-            android:layout_marginHorizontal="10dp"
             android:text="Capture Photo"
-            android:textColor="@color/white"/>
-        <Button
-            android:id="@+id/btnSynchroMark"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:background="@drawable/rounded_button_valider"
-            android:padding="5dp"
-            android:layout_marginHorizontal="10dp"
-            android:text="Synchro Photos"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white" />
+
+<!--        <Button-->
+<!--            android:id="@+id/btnSynchroMark"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="30dp"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:background="@drawable/rounded_button_valider"-->
+<!--            android:padding="5dp"-->
+<!--            android:text="Synchro Photos"-->
+<!--            android:textColor="@color/white" />-->
     </LinearLayout>
+
     <TableLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
-    <TableRow
-        android:id="@+id/row1">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TableRow android:id="@+id/row1">
 
 
-    </TableRow>
-    <TableRow
-        android:id="@+id/row2">
+        </TableRow>
+
+        <TableRow android:id="@+id/row2">
 
 
-    </TableRow>
+        </TableRow>
     </TableLayout>
 
 
@@ -234,38 +228,38 @@
             android:id="@+id/bottom_ok_button"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:background="@android:color/holo_green_light"
-            android:text="Valider"
             android:layout_marginRight="5dp"
-            android:textColor="@color/white"/>
+            android:background="@android:color/holo_blue_light"
+            android:text="Valider"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/bottom_delete_button"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:background="@color/design_default_color_error"
-            android:text="Effacer"
             android:layout_marginHorizontal="5dp"
-            android:textColor="@color/white"/>
+            android:background="@android:color/holo_red_light"
+            android:text="Effacer"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/bottom_cancel_button"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
+            android:layout_marginHorizontal="5dp"
             android:background="#7E7A7A"
             android:text="Annuler"
-            android:layout_marginHorizontal="5dp"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/bottom_modifier_button"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="115dp"
             android:layout_height="35dp"
+            android:layout_marginLeft="5dp"
             android:background="#BE7A1A"
             android:text="Modifier Etat"
-            android:layout_marginLeft="5dp"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white" />
     </LinearLayout>
 </LinearLayout>

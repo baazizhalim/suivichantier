@@ -1,6 +1,7 @@
 package com.example.suivichantier;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -18,4 +19,8 @@ public interface CommuniqueDao {
 
     @Query("SELECT * FROM communique where chantierID=:chantierID")
     List<Communique> getAllCommuniques(int chantierID);
+
+    @Query("delete FROM communique")
+    void deleteAll();
+
 }

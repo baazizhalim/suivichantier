@@ -2,6 +2,7 @@ package com.example.suivichantier;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.room.Room;
 
 import com.google.gson.Gson;
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -59,6 +62,11 @@ public class Login extends AppCompatActivity{
 
                     user = mDatabase.entrepriseDao().login(username, password);
                     if (user != null) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("userToken", user.getNom()); // Remplace par ton vrai token
+                        editor.putBoolean("isLoggedIn", true); // Indique que l'utilisateur est connecté
+                        editor.apply();
                         Toast.makeText(Login.this, "Login successful local", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Login.this, Bienvenue.class);
                         intent.putExtra("nomEntreprise", user.getNom());
@@ -74,7 +82,7 @@ public class Login extends AppCompatActivity{
         }
 
         private  void verifierServeur (String username, String password) {
-            Entreprise user=null;
+            //Entreprise user=null;
             JSONObject jsonBody = new JSONObject();
             try {
                 jsonBody.put("username", username);
@@ -100,13 +108,7 @@ public class Login extends AppCompatActivity{
                         @NotNull IOException e) {
                     runOnUiThread(() ->
                             Toast.makeText(getApplicationContext(), "Problème avec le serveur "+e.getMessage(), Toast.LENGTH_SHORT).show());
-//                getActivity(getApplicationContext()).runOnUiThread(() -> {
-//                    AlertDialog.Builder alert=new AlertDialog.Builder(getApplicationContext());
-//                    alert.setTitle("info");
-//                    alert.setMessage("Problème avec le serveur"+e.getMessage());
-//                    alert.setPositiveButton("Oui", null);
-//                    alert.show();
-//                });
+//
                 }
 
                 @Override
@@ -121,9 +123,16 @@ public class Login extends AppCompatActivity{
 
                             user = gson.fromJson(responseBody, Entreprise.class);
                             if (user != null) {
+                                SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("userToken", user.getNom()); // Remplace par ton vrai token
+                                editor.putBoolean("isLoggedIn", true); // Indique que l'utilisateur est connecté
+                                editor.apply();
+
                                 Toast.makeText(Login.this, user.getEntrepriseID()+" " + user.getNom(), Toast.LENGTH_SHORT).show();
 
                                 mDatabase.entrepriseDao().insert(user);
+                                creerRepertoire(user.getNom());
                                 Toast.makeText(Login.this, "Login successful distant" + user.getNom(), Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Login.this, Bienvenue.class);
                                 intent.putExtra("nomEntreprise", user.getNom());
@@ -147,5 +156,25 @@ public class Login extends AppCompatActivity{
             });
 
         }
+
+    private void creerRepertoire(String rep) {
+        File parentDir = getFilesDir();  // Dossier privé de l’application
+        String dirName = rep;
+        boolean success = FileUtils.createDirectory(parentDir, dirName);
+
+        if (success) {
+            Log.d("FileUtils", "Répertoire créé avec succès");
+        } else {
+            Log.d("FileUtils", "Le répertoire existe déjà ou la création a échoué");
+        }
+
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavUtils.navigateUpFromSameTask(this);
+        return true;
+    }
+
+}
 

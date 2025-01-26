@@ -19,21 +19,19 @@
         android:id="@+id/action_synch_plan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@android:drawable/ic_popup_sync"
+        android:icon="@android:drawable/ic_dialog_map"
         android:title="Synchro Plans"
-        app:showAsAction="ifRoom|collapseActionView" />
+        app:showAsAction="always" />
     <item
-        android:id="@+id/action_synch"
+        android:id="@+id/action_synch_mark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@android:drawable/ic_popup_sync"
         android:title="Synchro Marks"
-        app:showAsAction="ifRoom|collapseActionView" />
-
-
+        app:showAsAction="always"/>
     <item
         android:id="@+id/filtre"
         android:icon="@drawable/icons8_filtre_48"
         android:title="Filtre"
-        app:showAsAction="ifRoom|never" />
+        app:showAsAction="always" />
 </menu>

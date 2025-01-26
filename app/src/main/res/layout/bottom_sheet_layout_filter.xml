@@ -2,45 +2,54 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/fichier_2_100"
+    android:background="@drawable/affichage_2_100"
     android:orientation="vertical"
-    android:gravity="top"
     android:padding="5dp">
 
     <!-- Ajoutez ici vos vues (TextView, EditText, Button, etc.) -->
+    <Button
+        android:id="@+id/retour"
+        android:layout_width="36dp"
+        android:layout_height="27dp"
+        android:background="?attr/homeAsUpIndicator"
+        android:backgroundTint="#80CBC4"
+        android:backgroundTintMode="add"
+        android:textColorHint="@android:color/holo_green_light" />
+
     <TextView
         android:id="@+id/bottom_sheet_title"
         android:layout_width="116dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="sans-serif-black"
-        android:padding="5dp"
+        android:layout_marginVertical="30dp"
+
+        android:fontFamily="@font/futura_md_bt_medium"
+        android:padding="2dp"
         android:text="FILTRE"
         android:textAlignment="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
         android:textColor="@color/white"
-        android:layout_marginVertical="30dp"/>
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center_horizontal">
 
         <TextView
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="5dp"
-            android:text="Type Mark : "
+            android:text="Type Marque: "
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/white"/>
 
         <Spinner
             android:id="@+id/typeMark"
-            android:layout_width="150dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:paddingHorizontal="5dp"
@@ -54,14 +63,14 @@
             android:gravity="right"
             android:paddingHorizontal="5dp"
             android:paddingVertical="5dp"
-            android:text="Type Lot "
+            android:text="Type Lot: "
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/white"/>
 
         <Spinner
             android:id="@+id/typeLot"
-            android:layout_width="150dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:paddingHorizontal="5dp"
@@ -74,14 +83,14 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="5dp"
-            android:text="Etat "
+            android:text="Etat: "
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/etat"
-            android:layout_width="150dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:paddingHorizontal="5dp"
@@ -166,7 +175,7 @@
 
         <Spinner
             android:id="@+id/listeMarks"
-            android:layout_width="200dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:paddingHorizontal="5dp"

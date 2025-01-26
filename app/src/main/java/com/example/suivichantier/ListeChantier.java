@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -21,8 +22,11 @@ public class ListeChantier extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MyAdapterChantier myAdapterChantier;
     private List<ListItemChantier> itemListChantier;
-    private List<Chantier> chantiers=new ArrayList<>();
-    private TextView titre ;
+    private List<Chantier> chantiers = new ArrayList<>();
+    private TextView titre;
+    int entrepriseID;
+    String nomEntreprise;
+    String typeEntreprise;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -36,44 +40,53 @@ public class ListeChantier extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         titre = findViewById(R.id.titre);
         Intent intent = getIntent();
-        int entrepriseID = intent.getIntExtra("entrepriseID",0);
-        String nomEntreprise = intent.getStringExtra("nomEntreprise");
-        String typeEntreprise = intent.getStringExtra("typeEntreprise");
-        String t= titre.getText().toString();
-        titre.setText(t+" de " +nomEntreprise);
+        entrepriseID = intent.getIntExtra("entrepriseID", 0);
+        nomEntreprise = intent.getStringExtra("nomEntreprise");
+        typeEntreprise = intent.getStringExtra("typeEntreprise");
+        String t = titre.getText().toString();
+        titre.setText(t + " de " + nomEntreprise);
 
 
-        if(Objects.equals(typeEntreprise, "client")){
-            chantiers=mDatabase.chantierDao().getAllChantiers(entrepriseID);
+        if (Objects.equals(typeEntreprise, "client")) {
+            chantiers = mDatabase.chantierDao().getAllChantiersByPrioritaireID(entrepriseID);
 
 
-        } else if(typeEntreprise.equals("ES")) {
+        } else if (Objects.equals(typeEntreprise, "ES")) {
             List<Lot> lots = mDatabase.lotDao().getAllLotES(entrepriseID);
             for (Lot lot : lots) {
-                Chantier chantier=mDatabase.chantierDao().getChantierByID(lot.getChantierID());
-
-
-                if(chantiers.stream().noneMatch(chant -> chant.getChantierID() == chantier.getChantierID()))chantiers.add(chantier);
+                Chantier chantier = mDatabase.chantierDao().getChantierByID(lot.getChantierID());
+                if (chantiers.stream().noneMatch(chant -> chant.getChantierID() == chantier.getChantierID()))
+                    chantiers.add(chantier);
 
             }
-        }else {
+        } else {
             List<Lot> lots = mDatabase.lotDao().getAllLotER(entrepriseID);
             for (Lot lot : lots) {
                 Chantier chantier = mDatabase.chantierDao().getChantierByID(lot.getChantierID());
-                if(chantiers.stream().noneMatch(chant -> chant.getChantierID() == chantier.getChantierID()))chantiers.add(chantier);
-
-
+                if (chantiers.stream().noneMatch(chant -> chant.getChantierID() == chantier.getChantierID()))
+                    chantiers.add(chantier);
             }
         }
 
-            chantiers.forEach(chantier -> {
-                itemListChantier.add(new ListItemChantier(chantier.getNom(), chantier.getChantierID()));
-            });
+        chantiers.forEach(chantier -> {
+            itemListChantier.add(new ListItemChantier(chantier.getNom(), chantier.getChantierID()));
+        });
 
 
-
-        myAdapterChantier = new MyAdapterChantier(this, itemListChantier,entrepriseID,nomEntreprise,typeEntreprise);
+        myAdapterChantier = new MyAdapterChantier(this, itemListChantier, entrepriseID, nomEntreprise, typeEntreprise);
         recyclerView.setAdapter(myAdapterChantier);
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        Intent intent = new Intent(this, Bienvenue.class);
+        intent.putExtra("nomEntreprise", nomEntreprise);
+        intent.putExtra("entrepriseID", entrepriseID);
+        intent.putExtra("typeEntreprise", typeEntreprise);
+        startActivity(intent);
+        finish();
+        return true;
+    }
+
 }
 
